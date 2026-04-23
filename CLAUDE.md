@@ -1,6 +1,6 @@
 # GoogleBattleReport
 
-將 T100 ERP 系統資料同步至 Google Sheets 的 Node.js 腳本集。
+將 T100 ERP 系統資料同步至 Google Sheets，並以 Google Apps Script 定時寄出業績戰報的腳本集。
 
 ## 專案結構
 
@@ -12,6 +12,7 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
 ├── customerListTest.js               # 客戶明細 — 測試環境
+├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
 ├── t100erpinport-a72dfbb03006.json   # Google Service Account 金鑰（勿提交，已 gitignore）
@@ -183,12 +184,59 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | Q | l_pmaa299 | 客戶其他屬性九 |
 | R | l_pmaa300 | 客戶其他屬性十 |
 
+## Google Apps Script — 戰報寄送
+
+### sent06BattleReport.gs
+
+從 Google Sheets 的 `06戰報製作區` 工作表匯出 PDF 與 Excel，透過 Gmail 寄出。
+此檔案需貼至目標 Spreadsheet 的 Apps Script 編輯器執行，**非 Node.js**。
+
+#### 控制工作表：`06戰報日期區間`
+
+| 儲存格 | 用途 |
+|---|---|
+| `C2` | 戰報日期（Date 型別，用於檔名與信件標題）|
+| `L1` | 寄信開關（`ON` = 允許，寄送後自動改為 `OFF`）|
+| `L2` | 資料時間（DateTime 型別，顯示於信件內容）|
+| `L3` | 強制停止（`OFF` = 正常，其他值則中止）|
+| `L4` | 執行狀態（`寄送處理中` / `寄送成功MMDDHHMMSS` / `寄送失敗MMDDHHMMSS`）|
+| `N1` | 額外收件人 Email（空白則只寄固定收件人）|
+| `N2` | 信件標題附加說明 |
+| `N3` | 信件內容附加說明 |
+
+固定收件人：`shaojyun.hong@bingdian.com.tw`
+
+#### 鎖定機制
+
+- 執行前檢查 `資料寫入紀錄與判定!F1`（業績明細更新鎖）和 `H1`（客戶資料更新鎖），有值則中止
+- 使用 `LockService.getScriptLock()` 等待最多 5 秒，防止同時觸發
+- 鎖定後先檢查 `L4` 是否已為 `寄送處理中`，確保不重複執行
+
+#### 匯出邏輯
+
+- **PDF**：使用 Sheets Export API 匯出 `06戰報製作區`，自訂紙張 9.0×4.0 吋、橫向、無邊框
+- **Excel**：建立暫存 Spreadsheet，複製工作表並重新命名為 `YYYYMMDD`，還原欄寬列高後匯出為 `.xlsx`，完成後刪除暫存
+
+#### 工具函式
+
+| 函式 | 說明 |
+|---|---|
+| `formatDate_(date)` | Date → `YYYY/MM/DD` |
+| `formatDateTime_(date)` | Date → `YYYY/MM/DD HH:MM:SS` |
+| `formatDateCompact_(date)` | Date → `YYYYMMDD`（Excel 分頁名）|
+| `getTimestamp_()` | 現在時間 → `MMDDHHmmss`（狀態戳記）|
+
+---
+
 ## 執行方式
 
 ```bash
+# Node.js（資料同步）
 node GoogleBattelReportAutoDate.js   # 業績明細（正式）
 node GoogleCustomerDe.js             # 客戶明細（正式）
 ```
+
+`sent06BattleReport.gs` 貼至 Google Apps Script 編輯器，設定觸發器定時執行。
 
 ## 相依套件
 
@@ -199,5 +247,6 @@ npm install axios googleapis
 ## 注意事項
 
 - `t100erpinport-a72dfbb03006.json` 是 Google Service Account 私鑰，不可提交至版本控制
-- 腳本每次執行都會**清空後全量覆寫**，不做增量更新
+- Node.js 腳本每次執行都會**清空後全量覆寫**，不做增量更新
 - Log 檔案以 append 模式寫入，不會自動輪替
+- Apps Script 寄送成功後會自動將 `L1` 改回 `OFF`，需手動再開啟才能再次寄送
