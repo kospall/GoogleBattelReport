@@ -1,0 +1,10 @@
+# Google Service Account 金鑰（絕對不可提交）
+*.json
+
+# Log 檔
+*.log
+
+# Node.js
+node_modules/
+npm-debug.log*
+package-lock.json
