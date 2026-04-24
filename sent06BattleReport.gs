@@ -128,36 +128,38 @@ function sent06BattleReport() {
     }).getBlob().setName(fileName + '.pdf');
 
     // ---- Excel 匯出 ----
-    var tempSS      = SpreadsheetApp.create('Temp_' + sheetName);
-    var copiedSheet = sheet.copyTo(tempSS).setName(sheetTabName);  // 分頁名為 YYYYMMDD
+    var tempSS    = SpreadsheetApp.create('Temp_' + sheetName);
+    var excelBlob;
+    try {
+      var copiedSheet = sheet.copyTo(tempSS).setName(sheetTabName);  // 分頁名為 YYYYMMDD
 
-    var defaultSheet = tempSS.getSheets()[0];
-    if (defaultSheet.getName() !== sheetTabName) {
-      tempSS.deleteSheet(defaultSheet);
+      var defaultSheet = tempSS.getSheets()[0];
+      if (defaultSheet.getName() !== sheetTabName) {
+        tempSS.deleteSheet(defaultSheet);
+      }
+
+      var values = sheet.getDataRange().getDisplayValues();
+      copiedSheet.getRange(1, 1, values.length, values[0].length).setValues(values);
+
+      for (var r = 1; r <= values.length; r++) {
+        copiedSheet.setRowHeight(r, sheet.getRowHeight(r));
+      }
+      for (var c = 1; c <= values[0].length; c++) {
+        copiedSheet.setColumnWidth(c, sheet.getColumnWidth(c));
+      }
+
+      SpreadsheetApp.flush();
+
+      var excelUrl = 'https://docs.google.com/spreadsheets/d/' + tempSS.getId() + '/export?exportFormat=xlsx';
+      excelBlob = UrlFetchApp.fetch(excelUrl, {
+        headers: { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() }
+      }).getBlob().setName(fileName + '.xlsx');
+    } finally {
+      DriveApp.getFileById(tempSS.getId()).setTrashed(true);
     }
-
-    var values = sheet.getDataRange().getDisplayValues();
-    copiedSheet.getRange(1, 1, values.length, values[0].length).setValues(values);
-
-    for (var r = 1; r <= values.length; r++) {
-      copiedSheet.setRowHeight(r, sheet.getRowHeight(r));
-    }
-    for (var c = 1; c <= values[0].length; c++) {
-      copiedSheet.setColumnWidth(c, sheet.getColumnWidth(c));
-    }
-
-    SpreadsheetApp.flush();
-
-    var excelUrl  = 'https://docs.google.com/spreadsheets/d/' + tempSS.getId() + '/export?exportFormat=xlsx';
-    var excelBlob = UrlFetchApp.fetch(excelUrl, {
-      headers: { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() }
-    }).getBlob().setName(fileName + '.xlsx');
 
     // ---- 寄出 Email ----
     GmailApp.sendEmail(recipient, subject, body, { attachments: [pdfBlob, excelBlob] });
-
-    // ---- 刪除暫存 Spreadsheet ----
-    DriveApp.getFileById(tempSS.getId()).setTrashed(true);
 
     // ---- 更新狀態 ----
     controlSheet.getRange('L1').setValue('OFF');
