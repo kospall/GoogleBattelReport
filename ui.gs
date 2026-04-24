@@ -4,6 +4,7 @@ function onOpen() {
     .addItem('立即寄送戰報06', 'sent06BattleReport')
     .addItem('立即寄送戰報04', 'sent04BattleReport')
     .addSeparator()
-    .addItem('解除月底卡控（更新日期後執行）', 'releaseMonthEndHold')
+    .addItem('解除月初卡控 — 06戰報', 'release06MonthEndHold')
+    .addItem('解除月初卡控 — 04戰報', 'release04MonthEndHold')
     .addToUi();
 }

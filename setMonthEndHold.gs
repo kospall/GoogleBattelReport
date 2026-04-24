@@ -21,43 +21,42 @@ function setMonthEndHold() {
   }
 }
 
-function releaseMonthEndHold() {
-  var ss      = SpreadsheetApp.openById('1JrR6saVcWD6K0h6J67cgfHz6VDcDRRDMIHseu_f_Nzs');
-  var sheet06 = ss.getSheetByName('06戰報日期區間');
-  var sheet04 = ss.getSheetByName('04戰報日期區間');
-
-  // ---- 從 06 的 C2 讀取基準日期並推算各欄位 ----
-  if (sheet06) {
-    var c2 = sheet06.getRange('C2').getValue();
-    if (c2 instanceof Date) {
-      var b3 = calcMonthStart_(c2);
-      var b4 = calcQuarterStart_(c2);
-      var b5 = calcLastOct1_(c2);
-      sheet06.getRange('B3').setValue(b3);
-      sheet06.getRange('B4').setValue(b4);
-      sheet06.getRange('B5').setValue(b5);
-      sheet06.getRange('B6').setValue(b5);
-      Logger.log('06戰報日期區間 B3~B6 已更新');
-
-      var f35 = calcLastDayOfMonthLastYear_(c2);
-      var f4  = calcLastDayOfQuarterLastYear_(c2);
-      var f6  = calcLastSep30_(c2);
-      sheet06.getRange('F3').setValue(f35);
-      sheet06.getRange('F4').setValue(f4);
-      sheet06.getRange('F5').setValue(f35);
-      sheet06.getRange('F6').setValue(f6);
-      Logger.log('06戰報日期區間 F3~F6 已更新');
-    }
-    sheet06.getRange('L3').setValue('OFF');
-    Logger.log('06戰報日期區間 L3 已解除卡控');
-  }
-
-  if (sheet04) {
-    sheet04.getRange('L3').setValue('OFF');
-    Logger.log('04戰報日期區間 L3 已解除卡控');
-  }
-
+function release06MonthEndHold() {
+  var ss    = SpreadsheetApp.openById('1JrR6saVcWD6K0h6J67cgfHz6VDcDRRDMIHseu_f_Nzs');
+  var sheet = ss.getSheetByName('06戰報日期區間');
+  if (!sheet) return;
+  updateDateCells_(sheet);
+  sheet.getRange('L3').setValue('OFF');
   SpreadsheetApp.flush();
+  Logger.log('06戰報日期區間 日期已更新，L3 已解除卡控');
+}
+
+function release04MonthEndHold() {
+  var ss    = SpreadsheetApp.openById('1JrR6saVcWD6K0h6J67cgfHz6VDcDRRDMIHseu_f_Nzs');
+  var sheet = ss.getSheetByName('04戰報日期區間');
+  if (!sheet) return;
+  updateDateCells_(sheet);
+  sheet.getRange('L3').setValue('OFF');
+  SpreadsheetApp.flush();
+  Logger.log('04戰報日期區間 日期已更新，L3 已解除卡控');
+}
+
+// 從 sheet 的 C2 推算並寫入 B3~B6、F3~F6
+function updateDateCells_(sheet) {
+  var c2 = sheet.getRange('C2').getValue();
+  if (!(c2 instanceof Date)) return;
+
+  var oct1 = calcLastOct1_(c2);
+  sheet.getRange('B3').setValue(calcMonthStart_(c2));
+  sheet.getRange('B4').setValue(calcQuarterStart_(c2));
+  sheet.getRange('B5').setValue(oct1);
+  sheet.getRange('B6').setValue(oct1);
+
+  var f35 = calcLastDayOfMonthLastYear_(c2);
+  sheet.getRange('F3').setValue(f35);
+  sheet.getRange('F4').setValue(calcLastDayOfQuarterLastYear_(c2));
+  sheet.getRange('F5').setValue(f35);
+  sheet.getRange('F6').setValue(calcLastSep30_(c2));
 }
 
 // 當月第一天
