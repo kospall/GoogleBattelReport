@@ -8,19 +8,24 @@
 GoogleBattleReport/
 ├── deploy/                           # 新主機佈置用的正式腳本套件
 │   ├── GoogleBattelReportAutoDate.js
+│   ├── GoogleBattelReportFreeDate.js
 │   ├── GoogleCustomerDe.js
 │   ├── setReportSwitchON.js
 │   ├── runBattleReportSequence.js
+│   ├── runFreeDateInput.js
+│   ├── runFreeDateReport.bat
 │   ├── registerWindowsTask.js
 │   ├── sent06BattleReport.gs
 │   └── README.md                     # 佈置步驟說明
 ├── GoogleBattelReportAutoDate.js     # 業績明細 — 正式環境，日期自動計算
 ├── GoogleBattelReportAutoDateTest.js # 業績明細 — 測試環境，日期自動計算
-├── GoogleBattelReportFreeDate.js     # 業績明細 — 日期手動設定版本
+├── GoogleBattelReportFreeDate.js     # 業績明細 — 手動日期（接受 CLI 參數）
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
+├── runFreeDateInput.js               # 手動上傳互動介面（輸入日期並呼叫 FreeDate）
+├── runFreeDateReport.bat             # 手動上傳啟動捷徑（雙擊執行）
 ├── setReportSwitchON.js              # 將 L1 寄信開關設為 ON
 ├── registerWindowsTask.js            # Windows 工作排程器登錄工具
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
@@ -139,6 +144,9 @@ while ((today - startdate) > TWO_YEARS_MS) {
     startdate.setFullYear(startdate.getFullYear() + 1);
 }
 ```
+
+日期格式化使用 `toLocalDateStr()`（取本地年月日），**不使用 `toISOString()`**。
+`toISOString()` 輸出 UTC 時間，台灣 UTC+8 環境下 10/1 午夜會被轉為前一天（如 `2024-09-30`）。
 
 ## 客戶明細腳本
 
@@ -270,6 +278,8 @@ node registerWindowsTask.js 06:30 TaskName    # 指定任務名稱
 新主機直接複製此資料夾即可，不含測試腳本與後端原始碼。
 詳細佈置步驟參見 `deploy/README.md`。
 
+`runFreeDateReport.bat` 與 `runFreeDateInput.js` 同步放入 deploy/，讓使用者可直接雙擊補傳指定日期區間的業績明細。
+
 ## 執行方式
 
 ```bash
@@ -280,6 +290,10 @@ node setReportSwitchON.js            # 寄信開關設為 ON
 
 # 依序執行（推薦）
 node runBattleReportSequence.js
+
+# 手動指定日期上傳（雙擊 bat 或指令執行）
+runFreeDateReport.bat                # 互動式輸入日期後執行
+node GoogleBattelReportFreeDate.js 2024-01-01 2026-04-24  # 直接傳參數
 
 # 登錄排程（系統管理員）
 node registerWindowsTask.js 08:00

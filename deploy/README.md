@@ -7,9 +7,12 @@
 | 檔案 | 類型 | 說明 |
 |---|---|---|
 | `GoogleBattelReportAutoDate.js` | Node.js | 業績明細同步（正式，日期自動計算）|
+| `GoogleBattelReportFreeDate.js` | Node.js | 業績明細同步（手動指定日期，接受 CLI 參數）|
 | `GoogleCustomerDe.js` | Node.js | 客戶明細同步（正式）|
 | `setReportSwitchON.js` | Node.js | 將戰報寄信開關設為 ON |
 | `runBattleReportSequence.js` | Node.js | 依序執行上述三支腳本的排程入口 |
+| `runFreeDateInput.js` | Node.js | 手動上傳互動介面（輸入日期並呼叫 FreeDate）|
+| `runFreeDateReport.bat` | BAT | 手動上傳啟動捷徑（雙擊執行）|
 | `registerWindowsTask.js` | Node.js | 向 Windows 工作排程器登錄每日排程 |
 | `sent06BattleReport.gs` | Apps Script | 貼至 Google Apps Script，負責寄出戰報 |
 
@@ -67,6 +70,17 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 
 將 `sent06BattleReport.gs` 的內容貼至目標 Google Spreadsheet 的 Apps Script 編輯器，
 並設定時間觸發器定時執行 `sent06BattleReport`。
+
+## 手動指定日期上傳
+
+需要補傳特定日期區間的業績明細時，雙擊 `runFreeDateReport.bat`：
+
+1. 輸入起始日期（格式 `YYYY-MM-DD`，例：`2024-01-01`）
+2. 輸入結束日期（格式 `YYYY-MM-DD`，例：`2026-04-24`）
+3. 確認後按 `Y` 執行，`N` 取消
+4. 執行完成後查看畫面輸出與 `業績明細上傳紀錄.log`
+
+> 此功能使用 `GoogleBattelReportFreeDate.js`（正式環境 `topprd`），寫入目標為 `業績明細` 工作表。
 
 ## 注意事項
 
