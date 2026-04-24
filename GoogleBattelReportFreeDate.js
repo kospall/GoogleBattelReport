@@ -24,11 +24,23 @@ const LOCK_SHEET     = '資料寫入紀錄與判定';
 const LOCK_CELL      = `${LOCK_SHEET}!F1`;
 
 // ===== 環境切換 =====
-const ENV     = 'toptst';
+const ENV     = 'topprd';
 const API_URL = ENV === 'topprd'
     ? 'http://192.168.70.107/wstopprd/ws/r/awsp920'
     : 'http://192.168.70.107/wtoptst/ws/r/awsp920';
 
+
+// ===== 命令列日期參數 =====
+const startdate = process.argv[2];
+const enddate   = process.argv[3];
+
+if (!startdate || !enddate) {
+    console.error('用法：node GoogleBattelReportFreeDate.js <startdate> <enddate>');
+    console.error('例如：node GoogleBattelReportFreeDate.js 2024-01-01 2026-04-24');
+    process.exit(1);
+}
+
+writeLog(`startdate: ${startdate}  enddate: ${enddate}`);
 
 // ===== API 基本參數 =====
 
@@ -51,8 +63,8 @@ const BASE_PAYLOAD = {
     datakey: {
         EntId:     '1',
         CompanyId: 'BD01',
-        startdate: '2024-01-01',
-        enddate: '2026-04-01'
+        startdate,
+        enddate
     }
 };
 

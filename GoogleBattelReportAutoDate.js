@@ -31,9 +31,16 @@ const API_URL = ENV === 'topprd'
 
 
 // ===== 自動計算日期 =====
+function toLocalDateStr(d) {
+    const y  = d.getFullYear();
+    const m  = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+}
+
 function calcDates() {
     const today   = new Date();
-    const enddate = today.toISOString().slice(0, 10);
+    const enddate = toLocalDateStr(today);
 
     let startdate = new Date(today.getFullYear() - 3, 9, 1);
 
@@ -42,7 +49,7 @@ function calcDates() {
         startdate.setFullYear(startdate.getFullYear() + 1);
     }
 
-    const startStr = startdate.toISOString().slice(0, 10);
+    const startStr = toLocalDateStr(startdate);
     writeLog(`startdate: ${startStr}  enddate: ${enddate}`);
     return { startdate: startStr, enddate };
 }
