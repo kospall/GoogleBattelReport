@@ -28,7 +28,9 @@ GoogleBattleReport/
 ├── runFreeDateReport.bat             # 手動上傳啟動捷徑（雙擊執行）
 ├── setReportSwitchON.js              # 將 L1 寄信開關設為 ON
 ├── registerWindowsTask.js            # Windows 工作排程器登錄工具
+├── sent04BattleReport.gs             # Google Apps Script — 04戰報寄送（全國）
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
+├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
 ├── t100erpinport-a72dfbb03006.json   # Google Service Account 金鑰（勿提交，已 gitignore）
@@ -204,6 +206,35 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | R | l_pmaa300 | 客戶其他屬性十 |
 
 ## Google Apps Script — 戰報寄送
+
+### ui.gs
+
+在 Google Sheets 上方選單列新增「戰報作業」自訂選單，提供手動觸發入口。
+
+| 選單項目 | 呼叫函式 |
+|---|---|
+| 立即寄送戰報06 | `sent06BattleReport` |
+| 立即寄送戰報04 | `sent04BattleReport` |
+
+`onOpen()` 在每次開啟試算表時自動執行，無需手動觸發。
+
+### sent04BattleReport.gs
+
+從 Google Sheets 的 `04戰報製作區` 工作表匯出 PDF 與 Excel，透過 Gmail 寄出（全國業績戰報）。
+邏輯與 `sent06BattleReport.gs` 相同，控制工作表改為 `04戰報日期區間`。
+
+#### 控制工作表：`04戰報日期區間`
+
+| 儲存格 | 用途 |
+|---|---|
+| `C2` | 戰報日期（Date 型別，用於檔名與信件標題）|
+| `L1` | 寄信開關（`ON` = 允許，寄送後自動改為 `OFF`）|
+| `L2` | 資料時間（DateTime 型別，顯示於信件內容）|
+| `L3` | 強制停止（`OFF` = 正常，其他值則中止）|
+| `L4` | 執行狀態（`寄送處理中` / `寄送成功MMDDHHMMSS` / `寄送失敗MMDDHHMMSS`）|
+| `N1` | 額外收件人 Email（空白則只寄固定收件人）|
+| `N2` | 信件標題附加說明 |
+| `N3` | 信件內容附加說明 |
 
 ### sent06BattleReport.gs
 

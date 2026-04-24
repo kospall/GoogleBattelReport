@@ -14,7 +14,9 @@
 | `runFreeDateInput.js` | Node.js | 手動上傳互動介面（輸入日期並呼叫 FreeDate）|
 | `runFreeDateReport.bat` | BAT | 手動上傳啟動捷徑（雙擊執行）|
 | `registerWindowsTask.js` | Node.js | 向 Windows 工作排程器登錄每日排程 |
-| `sent06BattleReport.gs` | Apps Script | 貼至 Google Apps Script，負責寄出戰報 |
+| `sent04BattleReport.gs` | Apps Script | 貼至 Google Apps Script，負責寄出全國業績戰報（04）|
+| `sent06BattleReport.gs` | Apps Script | 貼至 Google Apps Script，負責寄出業績戰報（06）|
+| `ui.gs` | Apps Script | 貼至 Google Apps Script，在 Sheets 建立「戰報作業」自訂選單 |
 
 ## 佈置步驟
 
@@ -68,8 +70,19 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 
 ### 7. 設定 Apps Script
 
-將 `sent06BattleReport.gs` 的內容貼至目標 Google Spreadsheet 的 Apps Script 編輯器，
-並設定時間觸發器定時執行 `sent06BattleReport`。
+將以下三個檔案的內容分別貼至目標 Google Spreadsheet 的 Apps Script 編輯器（各建立一個 .gs 檔案）：
+
+| 檔案 | 說明 |
+|---|---|
+| `ui.gs` | 自訂選單，提供手動觸發入口 |
+| `sent04BattleReport.gs` | 全國業績戰報（04）寄送邏輯 |
+| `sent06BattleReport.gs` | 業績戰報（06）寄送邏輯 |
+
+工具函式（`formatDate_` 等）定義於 `sent06BattleReport.gs`，三個檔案共用，**不可重複貼入**。
+
+設定時間觸發器定時執行（建議每日 09:00 與 10:00 各一次）：
+- `sent04BattleReport`
+- `sent06BattleReport`
 
 ## 手動指定日期上傳
 
