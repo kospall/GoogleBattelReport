@@ -228,8 +228,8 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | 函式 | 說明 |
 |---|---|
 | `setMonthEndHold()` | 每日由觸發器執行，當天為 1 日才實際寫入，其餘日期直接 return |
-| `release06MonthEndHold()` | 更新 `06戰報日期區間` 的 B3~B6、F3~F6，並將 L3 改回 `OFF` |
-| `release04MonthEndHold()` | 更新 `04戰報日期區間` 的 B3~B6、F3~F6，並將 L3 改回 `OFF` |
+| `release06MonthEndHold()` | 更新 `06戰報日期區間` 的 B3–B6、F3–F6，並將 L3 改回 `OFF` |
+| `release04MonthEndHold()` | 更新 `04戰報日期區間` 的 B3–B6、F3–F6，並將 L3 改回 `OFF` |
 | `updateDateCells_(sheet)` | 共用輔助函式，從傳入 sheet 的 C2 推算並寫入各日期格 |
 
 **日期推算邏輯（以 C2 為基準）**：
@@ -249,7 +249,7 @@ while ((today - startdate) > TWO_YEARS_MS) {
 ```
 每月 1 日 07:00 → L3 自動設為「月初確認」→ 09:00 觸發器偵測 L3 ≠ OFF → 不寄信
 確認 C2 日期正確後 → Sheets 選單「解除月初卡控 — 06/04戰報」
-  → B3~B6、F3~F6 自動推算寫入 → L3 回 OFF → 恢復正常寄信
+  → B3–B6、F3–F6 自動推算寫入 → L3 回 OFF → 恢復正常寄信
 ```
 
 ### sent04BattleReport.gs
