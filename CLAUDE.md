@@ -216,7 +216,8 @@ while ((today - startdate) > TWO_YEARS_MS) {
 |---|---|
 | 立即寄送戰報06 | `sent06BattleReport` |
 | 立即寄送戰報04 | `sent04BattleReport` |
-| 解除月底卡控（更新日期後執行）| `releaseMonthEndHold` |
+| 解除月初卡控 — 06戰報 | `release06MonthEndHold` |
+| 解除月初卡控 — 04戰報 | `release04MonthEndHold` |
 
 `onOpen()` 在每次開啟試算表時自動執行，無需手動觸發。
 
@@ -227,14 +228,28 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | 函式 | 說明 |
 |---|---|
 | `setMonthEndHold()` | 每日由觸發器執行，當天為 1 日才實際寫入，其餘日期直接 return |
-| `releaseMonthEndHold()` | 手動解除卡控，將 04 與 06 的 L3 改回 `OFF` |
+| `release06MonthEndHold()` | 更新 `06戰報日期區間` 的 B3~B6、F3~F6，並將 L3 改回 `OFF` |
+| `release04MonthEndHold()` | 更新 `04戰報日期區間` 的 B3~B6、F3~F6，並將 L3 改回 `OFF` |
+| `updateDateCells_(sheet)` | 共用輔助函式，從傳入 sheet 的 C2 推算並寫入各日期格 |
+
+**日期推算邏輯（以 C2 為基準）**：
+
+| 格子 | 說明 | C2=2026/4/24 範例 |
+|---|---|---|
+| B3 | 當月第一天 | 2026/4/1 |
+| B4 | 當季第一天 | 2026/4/1（Q2）|
+| B5/B6 | 最近一個 10/1（≤ C2）| 2025/10/1 |
+| F3/F5 | 去年同月最後一天 | 2025/4/30 |
+| F4 | 去年同季最後一天 | 2025/6/30（Q2）|
+| F6 | 最近一個 9/30（< C2）| 2025/9/30 |
 
 **觸發器設定**：日計時器，`上午 7 點到 8 點`，確保在 09:00 寄信觸發器之前執行。
 
 **每月流程**：
 ```
 每月 1 日 07:00 → L3 自動設為「月初確認」→ 09:00 觸發器偵測 L3 ≠ OFF → 不寄信
-手動更新 C2 日期後 → Sheets 選單「解除月底卡控」→ L3 回 OFF → 隔日恢復正常寄信
+確認 C2 日期正確後 → Sheets 選單「解除月初卡控 — 06/04戰報」
+  → B3~B6、F3~F6 自動推算寫入 → L3 回 OFF → 恢復正常寄信
 ```
 
 ### sent04BattleReport.gs
