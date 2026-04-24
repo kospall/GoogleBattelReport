@@ -8,3 +8,6 @@
 node_modules/
 npm-debug.log*
 package-lock.json
+
+# 自動產生的排程入口（registerWindowsTask.js 產出）
+runBattleReport.bat
