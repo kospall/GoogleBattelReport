@@ -6,12 +6,23 @@
 
 ```
 GoogleBattleReport/
+├── deploy/                           # 新主機佈置用的正式腳本套件
+│   ├── GoogleBattelReportAutoDate.js
+│   ├── GoogleCustomerDe.js
+│   ├── setReportSwitchON.js
+│   ├── runBattleReportSequence.js
+│   ├── registerWindowsTask.js
+│   ├── sent06BattleReport.gs
+│   └── README.md                     # 佈置步驟說明
 ├── GoogleBattelReportAutoDate.js     # 業績明細 — 正式環境，日期自動計算
 ├── GoogleBattelReportAutoDateTest.js # 業績明細 — 測試環境，日期自動計算
 ├── GoogleBattelReportFreeDate.js     # 業績明細 — 日期手動設定版本
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
 ├── customerListTest.js               # 客戶明細 — 測試環境
+├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
+├── setReportSwitchON.js              # 將 L1 寄信開關設為 ON
+├── registerWindowsTask.js            # Windows 工作排程器登錄工具
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
@@ -228,12 +239,50 @@ while ((today - startdate) > TWO_YEARS_MS) {
 
 ---
 
+## 排程控制腳本
+
+### setReportSwitchON.js
+將 `06戰報日期區間!L1` 設為 `ON`，允許 Apps Script 寄送戰報。
+執行前會先檢查 `資料寫入紀錄與判定!F1`（業績明細鎖）與 `H1`（客戶資料鎖），任一有值則中止。
+
+### runBattleReportSequence.js
+依序執行三個步驟，任一失敗則後續步驟不執行：
+
+```
+業績明細 → 客戶明細 → 寫入ON
+```
+
+執行紀錄寫入 `排程執行紀錄.log`。
+
+### registerWindowsTask.js
+向 Windows 工作排程器登錄每日定時任務，需以**系統管理員**身分執行：
+
+```cmd
+node registerWindowsTask.js 08:00              # 每日 08:00
+node registerWindowsTask.js 06:30 TaskName    # 指定任務名稱
+```
+
+自動在工作目錄產生 `runBattleReport.bat` 作為排程入口（已加入 `.gitignore`）。
+
+## deploy/ 資料夾
+
+包含新主機佈置所需的全部正式腳本，內容與根目錄同名檔案相同。
+新主機直接複製此資料夾即可，不含測試腳本與後端原始碼。
+詳細佈置步驟參見 `deploy/README.md`。
+
 ## 執行方式
 
 ```bash
-# Node.js（資料同步）
+# 個別執行
 node GoogleBattelReportAutoDate.js   # 業績明細（正式）
 node GoogleCustomerDe.js             # 客戶明細（正式）
+node setReportSwitchON.js            # 寄信開關設為 ON
+
+# 依序執行（推薦）
+node runBattleReportSequence.js
+
+# 登錄排程（系統管理員）
+node registerWindowsTask.js 08:00
 ```
 
 `sent06BattleReport.gs` 貼至 Google Apps Script 編輯器，設定觸發器定時執行。
@@ -249,4 +298,4 @@ npm install axios googleapis
 - `t100erpinport-a72dfbb03006.json` 是 Google Service Account 私鑰，不可提交至版本控制
 - Node.js 腳本每次執行都會**清空後全量覆寫**，不做增量更新
 - Log 檔案以 append 模式寫入，不會自動輪替
-- Apps Script 寄送成功後會自動將 `L1` 改回 `OFF`，需手動再開啟才能再次寄送
+- Apps Script 寄送成功後會自動將 `L1` 改回 `OFF`，需再次執行 `setReportSwitchON.js` 才能重新啟用
