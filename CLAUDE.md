@@ -30,6 +30,7 @@ GoogleBattleReport/
 ├── registerWindowsTask.js            # Windows 工作排程器登錄工具
 ├── sent04BattleReport.gs             # Google Apps Script — 04戰報寄送（全國）
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
+├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
@@ -215,8 +216,26 @@ while ((today - startdate) > TWO_YEARS_MS) {
 |---|---|
 | 立即寄送戰報06 | `sent06BattleReport` |
 | 立即寄送戰報04 | `sent04BattleReport` |
+| 解除月底卡控（更新日期後執行）| `releaseMonthEndHold` |
 
 `onOpen()` 在每次開啟試算表時自動執行，無需手動觸發。
+
+### setMonthEndHold.gs
+
+每月 1 日自動將 04 與 06 的 `L3` 設為 `月初確認`，阻擋戰報寄出，強制人工確認 C2 日期已更新。
+
+| 函式 | 說明 |
+|---|---|
+| `setMonthEndHold()` | 每日由觸發器執行，當天為 1 日才實際寫入，其餘日期直接 return |
+| `releaseMonthEndHold()` | 手動解除卡控，將 04 與 06 的 L3 改回 `OFF` |
+
+**觸發器設定**：日計時器，`上午 7 點到 8 點`，確保在 09:00 寄信觸發器之前執行。
+
+**每月流程**：
+```
+每月 1 日 07:00 → L3 自動設為「月初確認」→ 09:00 觸發器偵測 L3 ≠ OFF → 不寄信
+手動更新 C2 日期後 → Sheets 選單「解除月底卡控」→ L3 回 OFF → 隔日恢復正常寄信
+```
 
 ### sent04BattleReport.gs
 
