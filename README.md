@@ -33,6 +33,8 @@ GoogleBattleReport/
 │   ├── runFreeDateReport.bat
 │   ├── registerWindowsTask.js
 │   ├── sent06BattleReport.gs
+│   ├── exportSheetData.gs
+│   ├── ui.gs
 │   └── README.md                     # 佈置步驟說明（同本文件新主機佈置章節）
 ├── GoogleBattelReportAutoDate.js     # 業績明細 — 正式環境，日期自動計算
 ├── GoogleBattelReportAutoDateTest.js # 業績明細 — 測試環境，日期自動計算
@@ -48,6 +50,7 @@ GoogleBattleReport/
 ├── sent04BattleReport.gs             # Google Apps Script — 04戰報寄送（全國）
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
 ├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
+├── exportSheetData.gs                # Google Apps Script — 匯出業績/客戶明細為無公式 xlsx
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
@@ -259,8 +262,28 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | 立即寄送戰報04 | `sent04BattleReport` |
 | 解除月初卡控 — 06戰報 | `release06MonthEndHold` |
 | 解除月初卡控 — 04戰報 | `release04MonthEndHold` |
+| 匯出業績明細（無公式 Excel）| `exportSalesData` |
+| 匯出客戶明細（無公式 Excel）| `exportCustomerData` |
 
 `onOpen()` 在每次開啟試算表時自動執行，無需手動觸發。
+
+### exportSheetData.gs
+
+從 Sheets 選單匯出「業績明細」或「客戶明細」工作表為無公式 xlsx。
+
+| 函式 | 說明 |
+|---|---|
+| `exportSalesData()` | 匯出業績明細 |
+| `exportCustomerData()` | 匯出客戶明細 |
+| `exportSheetToExcel_(sheetName, filePrefix)` | 共用匯出邏輯 |
+
+**匯出方式**：
+- **從 Sheets 選單執行**：透過 base64 data URL 直接觸發瀏覽器下載，不佔 Drive 空間
+- **從 Apps Script 編輯器執行**：儲存至指定 Drive 資料夾（`EXPORT_FOLDER_ID`），URL 記錄於 Logger
+
+**檔名格式**：`YYYYMMDD 業績明細.xlsx` / `YYYYMMDD 客戶明細.xlsx`
+
+**處理流程**：讀取 `getDisplayValues()`（去公式）→ 建立暫存試算表寫入值 → 匯出 xlsx → 刪除暫存。10 萬列約 2 分鐘，在 GAS 6 分鐘上限內。
 
 ### setMonthEndHold.gs
 
@@ -462,16 +485,17 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 
 ### 7. 設定 Apps Script
 
-將以下四個檔案的內容分別貼至目標 Google Spreadsheet 的 Apps Script 編輯器（各建立一個 .gs 檔案）：
+將以下五個檔案的內容分別貼至目標 Google Spreadsheet 的 Apps Script 編輯器（各建立一個 .gs 檔案）：
 
 | 檔案 | 說明 |
 |---|---|
-| `ui.gs` | 自訂選單，提供手動觸發入口與解除卡控 |
+| `ui.gs` | 自訂選單，提供手動觸發入口、解除卡控與資料匯出 |
 | `sent04BattleReport.gs` | 全國業績戰報（04）寄送邏輯 |
 | `sent06BattleReport.gs` | 業績戰報（06）寄送邏輯 |
 | `setMonthEndHold.gs` | 月初自動卡控與解除卡控邏輯 |
+| `exportSheetData.gs` | 業績明細 / 客戶明細匯出為無公式 xlsx |
 
-工具函式（`formatDate_` 等）定義於 `sent06BattleReport.gs`，四個檔案共用，**不可重複貼入**。
+工具函式（`formatDate_` 等）定義於 `sent06BattleReport.gs`，五個檔案共用，**不可重複貼入**。
 
 設定時間觸發器（共三個）：
 
