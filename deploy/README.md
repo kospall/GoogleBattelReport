@@ -17,6 +17,7 @@
 | `sent04BattleReport.gs` | Apps Script | 貼至 Google Apps Script，負責寄出全國業績戰報（04）|
 | `sent06BattleReport.gs` | Apps Script | 貼至 Google Apps Script，負責寄出業績戰報（06）|
 | `setMonthEndHold.gs` | Apps Script | 每月 1 日自動將 L3 設為「月初確認」，阻擋寄信直到人工確認日期 |
+| `exportSheetData.gs` | Apps Script | 匯出業績明細 / 客戶明細為無公式 xlsx（選單下載或存至 Drive）|
 | `ui.gs` | Apps Script | 貼至 Google Apps Script，在 Sheets 建立「戰報作業」自訂選單 |
 
 ## 佈置步驟
@@ -71,16 +72,17 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 
 ### 7. 設定 Apps Script
 
-將以下四個檔案的內容分別貼至目標 Google Spreadsheet 的 Apps Script 編輯器（各建立一個 .gs 檔案）：
+將以下五個檔案的內容分別貼至目標 Google Spreadsheet 的 Apps Script 編輯器（各建立一個 .gs 檔案）：
 
 | 檔案 | 說明 |
 |---|---|
-| `ui.gs` | 自訂選單，提供手動觸發入口與解除卡控 |
+| `ui.gs` | 自訂選單，提供手動觸發入口、解除卡控與資料匯出 |
 | `sent04BattleReport.gs` | 全國業績戰報（04）寄送邏輯 |
 | `sent06BattleReport.gs` | 業績戰報（06）寄送邏輯 |
 | `setMonthEndHold.gs` | 月初自動卡控與解除卡控邏輯 |
+| `exportSheetData.gs` | 業績明細 / 客戶明細匯出為無公式 xlsx |
 
-工具函式（`formatDate_` 等）定義於 `sent06BattleReport.gs`，四個檔案共用，**不可重複貼入**。
+工具函式（`formatDate_` 等）定義於 `sent06BattleReport.gs`，五個檔案共用，**不可重複貼入**。
 
 設定時間觸發器（共三個）：
 

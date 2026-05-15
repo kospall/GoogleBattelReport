@@ -18,6 +18,8 @@ GoogleBattleReport/
 │   ├── runFreeDateReport.bat
 │   ├── registerWindowsTask.js
 │   ├── sent06BattleReport.gs
+│   ├── exportSheetData.gs
+│   ├── ui.gs
 │   └── README.md                     # 佈置步驟說明
 ├── GoogleBattelReportAutoDate.js     # 業績明細 — 正式環境，日期自動計算
 ├── GoogleBattelReportAutoDateTest.js # 業績明細 — 測試環境，日期自動計算
@@ -33,6 +35,7 @@ GoogleBattleReport/
 ├── sent04BattleReport.gs             # Google Apps Script — 04戰報寄送（全國）
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
 ├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
+├── exportSheetData.gs                # Google Apps Script — 匯出業績/客戶明細為無公式 xlsx
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
