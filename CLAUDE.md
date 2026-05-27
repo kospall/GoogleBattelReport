@@ -18,6 +18,7 @@ GoogleBattleReport/
 │   ├── runFreeDateReport.bat
 │   ├── registerWindowsTask.js
 │   ├── sent06BattleReport.gs
+│   ├── sent68SummerReport.gs
 │   ├── exportSheetData.gs
 │   ├── ui.gs
 │   └── README.md                     # 佈置步驟說明
