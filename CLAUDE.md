@@ -41,6 +41,7 @@ GoogleBattleReport/
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
+├── cwsspa018.4gl                     # 後端 API 原始碼 — 取得客戶應收票據明細（Genero BDL）
 └── t100erpinport-a72dfbb03006.json   # Google Service Account 金鑰（勿提交，已 gitignore）
 ```
 
