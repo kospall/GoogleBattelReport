@@ -336,7 +336,7 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | 資料表 | 說明 |
 |---|---|
 | `apce_t` | 沖銷單明細 |
-| `apda_t` | 付款單頭（LEFT JOIN，取單據日期與付款對象，條件 `apda018 = '0005'`）|
+| `apda_t` | 付款單頭（LEFT JOIN on `apdadocno`+`apdaent`+`apdacomp`+`apdasite`，取單據日期與付款對象，條件 `apda018 = '0005'`）|
 
 查詢條件：`apcecomp = 'BD01'`、`apcesite = 'BD01'`、`apda018 = '0005'`、`apdadocdt BETWEEN startdate AND enddate`
 
