@@ -43,6 +43,7 @@ GoogleBattleReport/
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
 ├── cwsspa018.4gl                     # 後端 API 原始碼 — 取得客戶應收票據明細（Genero BDL）
+├── cwsspa019.4gl                     # 後端 API 原始碼 — 取得沖銷單明細（Genero BDL）
 └── t100erpinport-a72dfbb03006.json   # Google Service Account 金鑰（勿提交，已 gitignore）
 ```
 
@@ -56,6 +57,7 @@ GoogleBattleReport/
 | 業績明細 API | `cwsspa016` / `get.xmd.outboundlist` |
 | 客戶明細 API | `cwsspa017` / `get.pmaa.customerlist` |
 | 切結明細 API | `cwsspa018` / `get.anm.nmbblist` |
+| 沖銷明細 API | `cwsspa019` / `get.axr.apdalist` |
 | 業績明細鎖定格 | `資料寫入紀錄與判定!F1` |
 | 客戶明細鎖定格 | `資料寫入紀錄與判定!H1` |
 | 切結明細鎖定格 | `資料寫入紀錄與判定!J1` |

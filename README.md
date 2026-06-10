@@ -11,6 +11,7 @@
 - [業績明細腳本](#業績明細腳本)
 - [客戶明細腳本](#客戶明細腳本)
 - [切結明細腳本](#切結明細腳本)
+- [沖銷明細腳本](#沖銷明細腳本)
 - [Google Apps Script — 戰報寄送](#google-apps-script--戰報寄送)
 - [排程控制腳本](#排程控制腳本)
 - [執行方式](#執行方式)
@@ -59,6 +60,7 @@ GoogleBattleReport/
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
 ├── cwsspa018.4gl                     # 後端 API 原始碼 — 取得切結票明細（Genero BDL）
+├── cwsspa019.4gl                     # 後端 API 原始碼 — 取得沖銷單明細（Genero BDL）
 ├── t100erpinport-a72dfbb03006.json   # Google Service Account 金鑰（勿提交，已 gitignore）
 ├── 業績明細上傳紀錄.log
 └── 客戶明細上傳紀錄.log
@@ -307,6 +309,85 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | H | l_nmbb031 | 到期日 |
 | I | l_nmbb004 | 幣別 |
 | J | l_nmbb006 | 原幣金額 |
+
+---
+
+## 沖銷明細腳本
+
+### API 資訊
+
+- 後端程式：`cwsspa019`（取得沖銷單明細，Genero BDL）
+- 服務名稱：`get.axr.apdalist`
+- 單次呼叫，**無分頁**，一次回傳全部資料
+
+### 傳入參數
+
+| 參數 | 必填 | 說明 |
+|---|---|---|
+| `EntId` | 是 | 集團編號（固定 `1`）|
+| `startdate` | 是 | 起始日期（`YYYY-MM-DD`），篩選單據日期 |
+| `enddate` | 是 | 結束日期（`YYYY-MM-DD`），篩選單據日期 |
+
+### 涉及的資料庫資料表
+
+| 資料表 | 說明 |
+|---|---|
+| `apce_t` | 沖銷單明細 |
+| `apda_t` | 付款單頭（LEFT JOIN，取單據日期與付款對象，條件 `apda018 = '0005'`）|
+
+查詢條件：`apcecomp = 'BD01'`、`apcesite = 'BD01'`、`apda018 = '0005'`、`apdadocdt BETWEEN startdate AND enddate`
+
+### 回傳結構
+
+```json
+{
+  "master": [ { "...8 欄位..." } ]
+}
+```
+
+無分頁欄位，直接回傳 master 陣列。
+
+### 欄位對應（8 欄）
+
+| 欄 | 欄位名稱 | 說明 |
+|---|---|---|
+| A | l_apcedocno | 沖銷單單號 |
+| B | l_apdadocdt | 單據日期 |
+| C | l_apda005 | 付款對象 |
+| D | l_apceseq | 項次 |
+| E | l_apce001 | 來源作業 |
+| F | l_apce003 | 沖銷帳款單單號 |
+| G | l_apce004 | 沖銷帳款單項次 |
+| H | l_apce119 | 本幣沖帳金額 |
+
+### Request 範例
+
+```json
+{
+    "key": "f5458f5c0f9022db743a7c0710145903",
+    "type": "sync",
+    "host": {
+        "prod": "OpenAPI",
+        "ip": "192.168.70.107",
+        "lang": "zh_TW",
+        "acct": "tiptop",
+        "timestamp": "20260610023442685"
+    },
+    "service": {
+        "prod": "T100",
+        "name": "get.axr.apdalist",
+        "ip": "192.168.70.107",
+        "id": "toptst"
+    },
+    "datakey": {
+        "EntId": "1",
+        "startdate": "2024-01-01",
+        "enddate": "2026-12-31"
+    }
+}
+```
+
+---
 
 ### JS 腳本
 

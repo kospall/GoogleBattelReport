@@ -165,16 +165,16 @@ async function fetchData() {
 // ===== 資料轉換成二維陣列 =====
 function toRows(master) {
     return master.map(row => [
+        row.l_nmbb026   ?? '',   // 客戶應收票據交易對象
         row.l_nmbbdocno ?? '',   // 客戶應收票據單號
         row.l_nmbbseq   ?? '',   // 客戶應收票據項次
         row.l_nmbadocdt ?? '',   // 收票單號單據日期
         row.l_nmbb030   ?? '',   // 客戶應收票據票據號碼
         row.l_nmbb042   ?? '',   // 客戶應收票據票況
+        row.l_gzcbl004  ?? '',   // 票況名稱
         row.l_nmbb031   ?? '',   // 客戶應收票據到期日
         row.l_nmbb004   ?? '',   // 客戶應收票據幣別
-        row.l_nmbb006   ?? '',   // 客戶應收票據原幣金額
-        row.l_nmbb026   ?? '',   // 客戶應收票據交易對象
-        row.l_gzcbl004  ?? ''    // 票況名稱
+        row.l_nmbb006   ?? ''    // 客戶應收票據原幣金額
     ]);
 }
 
