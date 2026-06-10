@@ -105,7 +105,7 @@ PRIVATE FUNCTION cwsspa018_process() RETURNS ()   #200213-00032
 
 #toptst-c260610-001 260610 add by sjhong -s
 
-   DEFINE l_ent          LIKE nmbb_t.nmbbent         #集團編號
+   DEFINE l_ent          STRING                      #集團編號
    DEFINE l_sql          STRING                      #SQL
    DEFINE l_str          STRING                      #訊息
    DEFINE l_start_date   STRING                      #起始日期
@@ -113,16 +113,16 @@ PRIVATE FUNCTION cwsspa018_process() RETURNS ()   #200213-00032
    DEFINE lr_i           INTEGER                     #陣列索引
 
    DEFINE l_msg_parameter RECORD
-            l_nmbbdocno        STRING,               #客戶應收票據單號
-            l_nmbbseq          STRING,               #客戶應收票據項次
-            l_nmbadocdt        STRING,               #收票單號單據日期
-            l_nmbb030          STRING,               #客戶應收票據票據號碼
-            l_nmbb042          STRING,               #客戶應收票據票況
-            l_nmbb031          STRING,               #客戶應收票據到期日
-            l_nmbb004          STRING,               #客戶應收票據幣別
-            l_nmbb006          DECIMAL(18,2),         #客戶應收票據原幣金額
-            l_nmbb026          STRING,               #客戶應收票據交易對象
-            l_gzcbl004         STRING,               #票況名稱
+            l_nmbbdocno        STRING,
+            l_nmbbseq          STRING,
+            l_nmbadocdt        STRING,
+            l_nmbb030          STRING,
+            l_nmbb042          STRING,
+            l_nmbb031          STRING,
+            l_nmbb004          STRING,
+            l_nmbb006          DECIMAL(18,2),
+            l_nmbb026          STRING,
+            l_gzcbl004         STRING,
             messages           STRING
    END RECORD
 
@@ -178,25 +178,27 @@ PRIVATE FUNCTION cwsspa018_process() RETURNS ()   #200213-00032
    END IF
 
    #── 組 SQL：查詢客戶應收票據，串接 gzcbl_t 取票況名稱 ──
-   LET l_sql = " SELECT nb.NMBBDOCNO, nb.NMBBSEQ, " ,
-               "        TO_CHAR(na.NMBADOCDT,'YYYY-MM-DD') AS NMBADOCDT, " ,
-               "        nb.NMBB030, nb.NMBB042, " ,
-               "        TO_CHAR(nb.NMBB031,'YYYY-MM-DD') AS NMBB031, " ,
-               "        nb.NMBB004, nb.NMBB006, nb.NMBB026, " ,
-               "        gz.GZCBL004 " ,
+   LET l_sql = " SELECT nb.nmbbdocno, nb.nmbbseq, " ,
+               "        na.nmbadocdt, " ,
+               "        nb.nmbb030, nb.nmbb042, " ,
+               "        nb.nmbb031, " ,
+               "        nb.nmbb004, nb.nmbb006, nb.nmbb026, " ,
+               "        gz.gzcbl004 " ,
                " FROM nmbb_t nb " ,
-               " INNER JOIN nmba_t na " ,
+               " LEFT JOIN nmba_t na " ,
                "    ON nb.nmbbent   = na.nmbaent " ,
-               "   AND nb.nmbbsite  = na.nmbasite " ,
+               "   AND nb.nmbbcomp  = na.nmbacomp " ,
+               "   AND na.nmbasite  = 'BD01' " ,
                "   AND nb.nmbbdocno = na.nmbadocno " ,
                " LEFT JOIN gzcbl_t gz " ,
-               "    ON gz.gzcbl001  = '8148' " ,
+               "    ON gz.gzcbl001  = '8714' " ,
                "   AND gz.gzcbl002  = nb.nmbb042 " ,
                "   AND gz.gzcbl003  = 'zh_TW' " ,
                " WHERE nb.nmbbent   = ",l_ent ,
                "   AND nb.nmbbcomp  = 'BD01' " ,
+               "   AND na.nmbastus  = 'V' " ,
                "   AND nb.nmbb028   = '302' " ,
-               "   AND nb.NMBB031 BETWEEN TO_DATE('",l_start_date,"', 'YYYY-MM-DD') " ,
+               "   AND nb.nmbb031 BETWEEN TO_DATE('",l_start_date,"', 'YYYY-MM-DD') " ,
                "                      AND TO_DATE('",l_end_date,"', 'YYYY-MM-DD') "
 
    #── 執行查詢 ──
