@@ -45,6 +45,7 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
 ├── GooglePledgeBillTest.js            # 切結明細 — 測試環境（含分散式鎖 J1）
+├── GoogleOffsetListTest.js           # 切結轉神寶 — 測試環境（含分散式鎖 L1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
 ├── runFreeDateInput.js               # 手動上傳互動介面（輸入日期並呼叫 FreeDate）
@@ -93,6 +94,7 @@ const SHEET_NAME     = '業績明細'; // 目標工作表名稱
 - 工作表 `業績明細` / `業績明細測試`：A~N 欄，從第 2 列開始
 - 工作表 `客戶明細` / `客戶明細測試`：A~Z 欄，從第 2 列開始
 - 工作表 `切結明細`：A~J 欄，從第 2 列開始
+- 工作表 `切結轉神寶`：A~H 欄，從第 2 列開始
 - 工作表 `資料寫入紀錄與判定`：記錄每次執行結果（A=時間、B=主機名、C=狀態）
 
 ---
@@ -104,6 +106,7 @@ const SHEET_NAME     = '業績明細'; // 目標工作表名稱
 - 業績明細使用 `資料寫入紀錄與判定!F1`
 - 客戶明細使用 `資料寫入紀錄與判定!H1`
 - 切結明細使用 `資料寫入紀錄與判定!J1`
+- 切結轉神寶使用 `資料寫入紀錄與判定!L1`
 
 流程：
 1. 讀取鎖定儲存格，若有值則中止
@@ -396,6 +399,14 @@ while ((today - startdate) > TWO_YEARS_MS) {
 - 寫入目標：`切結明細` 工作表 A2 起
 - 鎖定格：`資料寫入紀錄與判定!J1`
 - 執行紀錄：`切結明細上傳紀錄.log`
+
+### JS 腳本（切結轉神寶）
+
+- `GoogleOffsetListTest.js`（測試環境 `toptst`）
+- 用法：`node GoogleOffsetListTest.js 2024-01-01 2026-12-31`
+- 寫入目標：`切結轉神寶` 工作表 A2 起
+- 鎖定格：`資料寫入紀錄與判定!L1`
+- 執行紀錄：`切結轉神寶上傳紀錄.log`
 
 ---
 

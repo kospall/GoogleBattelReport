@@ -28,6 +28,7 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
 ├── GooglePledgeBillTest.js            # 切結明細 — 測試環境（含分散式鎖 J1）
+├── GoogleOffsetListTest.js           # 切結轉神寶 — 測試環境（含分散式鎖 L1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
 ├── runFreeDateInput.js               # 手動上傳互動介面（輸入日期並呼叫 FreeDate）
@@ -61,6 +62,7 @@ GoogleBattleReport/
 | 業績明細鎖定格 | `資料寫入紀錄與判定!F1` |
 | 客戶明細鎖定格 | `資料寫入紀錄與判定!H1` |
 | 切結明細鎖定格 | `資料寫入紀錄與判定!J1` |
+| 切結轉神寶鎖定格 | `資料寫入紀錄與判定!L1` |
 
 ## 重要機制摘要
 
