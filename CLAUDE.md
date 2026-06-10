@@ -27,6 +27,7 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDate.js     # 業績明細 — 手動日期（接受 CLI 參數）
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
+├── GooglePledgeBillTest.js            # 切結明細 — 測試環境（含分散式鎖 J1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
 ├── runFreeDateInput.js               # 手動上傳互動介面（輸入日期並呼叫 FreeDate）
@@ -54,8 +55,10 @@ GoogleBattleReport/
 | 測試 API（`toptst`）| `http://192.168.70.107/wtoptst/ws/r/awsp920` |
 | 業績明細 API | `cwsspa016` / `get.xmd.outboundlist` |
 | 客戶明細 API | `cwsspa017` / `get.pmaa.customerlist` |
+| 切結明細 API | `cwsspa018` / `get.anm.nmbblist` |
 | 業績明細鎖定格 | `資料寫入紀錄與判定!F1` |
 | 客戶明細鎖定格 | `資料寫入紀錄與判定!H1` |
+| 切結明細鎖定格 | `資料寫入紀錄與判定!J1` |
 
 ## 重要機制摘要
 

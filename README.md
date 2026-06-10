@@ -10,6 +10,7 @@
 - [分散式鎖定機制](#分散式鎖定機制)
 - [業績明細腳本](#業績明細腳本)
 - [客戶明細腳本](#客戶明細腳本)
+- [切結明細腳本](#切結明細腳本)
 - [Google Apps Script — 戰報寄送](#google-apps-script--戰報寄送)
 - [排程控制腳本](#排程控制腳本)
 - [執行方式](#執行方式)
@@ -42,6 +43,7 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDate.js     # 業績明細 — 手動日期（接受 CLI 參數）
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
+├── GooglePledgeBillTest.js            # 切結明細 — 測試環境（含分散式鎖 J1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
 ├── runFreeDateInput.js               # 手動上傳互動介面（輸入日期並呼叫 FreeDate）
@@ -56,6 +58,7 @@ GoogleBattleReport/
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
+├── cwsspa018.4gl                     # 後端 API 原始碼 — 取得切結票明細（Genero BDL）
 ├── t100erpinport-a72dfbb03006.json   # Google Service Account 金鑰（勿提交，已 gitignore）
 ├── 業績明細上傳紀錄.log
 └── 客戶明細上傳紀錄.log
@@ -87,6 +90,7 @@ const SHEET_NAME     = '業績明細'; // 目標工作表名稱
 - Spreadsheet ID: `1JrR6saVcWD6K0h6J67cgfHz6VDcDRRDMIHseu_f_Nzs`
 - 工作表 `業績明細` / `業績明細測試`：A~N 欄，從第 2 列開始
 - 工作表 `客戶明細` / `客戶明細測試`：A~Z 欄，從第 2 列開始
+- 工作表 `切結明細`：A~J 欄，從第 2 列開始
 - 工作表 `資料寫入紀錄與判定`：記錄每次執行結果（A=時間、B=主機名、C=狀態）
 
 ---
@@ -97,6 +101,7 @@ const SHEET_NAME     = '業績明細'; // 目標工作表名稱
 
 - 業績明細使用 `資料寫入紀錄與判定!F1`
 - 客戶明細使用 `資料寫入紀錄與判定!H1`
+- 切結明細使用 `資料寫入紀錄與判定!J1`
 
 流程：
 1. 讀取鎖定儲存格，若有值則中止
@@ -249,6 +254,67 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | P | l_pmaa298 | 客戶其他屬性八 |
 | Q | l_pmaa299 | 客戶其他屬性九 |
 | R | l_pmaa300 | 客戶其他屬性十 |
+
+---
+
+## 切結明細腳本
+
+### API 資訊
+
+- 後端程式：`cwsspa018`（取得切結票明細，Genero BDL）
+- 服務名稱：`get.anm.nmbblist`
+- 單次呼叫，**無分頁**，一次回傳全部資料
+
+### 傳入參數
+
+| 參數 | 必填 | 說明 |
+|---|---|---|
+| `EntId` | 是 | 集團編號（固定 `1`）|
+| `startdate` | 是 | 起始日期（`YYYY-MM-DD`），篩選到期日 |
+| `enddate` | 是 | 結束日期（`YYYY-MM-DD`），篩選到期日 |
+
+### 涉及的資料庫資料表
+
+| 資料表 | 說明 |
+|---|---|
+| `nmbb_t` | 客戶應收票據明細 |
+| `nmba_t` | 客戶應收票據單頭（LEFT JOIN，取單據日期，條件 `nmbastus = 'V'`）|
+| `gzcbl_t` | 通用代碼多語言描述（LEFT JOIN，`gzcbl001 = '8714'`，取票況名稱）|
+
+查詢條件：`nmbbcomp = 'BD01'`、`nmbb028 = '302'`、`nmbb031 BETWEEN startdate AND enddate`、`nmbastus = 'V'`
+
+### 回傳結構
+
+```json
+{
+  "master": [ { "...10 欄位..." } ]
+}
+```
+
+無分頁欄位，直接回傳 master 陣列。
+
+### 欄位對應（10 欄）
+
+| 欄 | 欄位名稱 | 說明 |
+|---|---|---|
+| A | l_nmbb026 | 交易對象 |
+| B | l_nmbbdocno | 客戶應收票據單號 |
+| C | l_nmbbseq | 客戶應收票據項次 |
+| D | l_nmbadocdt | 收票單號單據日期 |
+| E | l_nmbb030 | 票據號碼 |
+| F | l_nmbb042 | 票況代碼 |
+| G | l_gzcbl004 | 票況名稱（gzcbl_t 對應）|
+| H | l_nmbb031 | 到期日 |
+| I | l_nmbb004 | 幣別 |
+| J | l_nmbb006 | 原幣金額 |
+
+### JS 腳本
+
+- `GooglePledgeBillTest.js`（測試環境 `toptst`）
+- 用法：`node GooglePledgeBillTest.js 2024-01-01 2026-12-31`
+- 寫入目標：`切結明細` 工作表 A2 起
+- 鎖定格：`資料寫入紀錄與判定!J1`
+- 執行紀錄：`切結明細上傳紀錄.log`
 
 ---
 
