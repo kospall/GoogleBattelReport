@@ -27,7 +27,9 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDate.js     # 業績明細 — 手動日期（接受 CLI 參數）
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
+├── GooglePledgeBillFreeDate.js        # 切結明細 — 正式環境，手動日期（含分散式鎖 J1）
 ├── GooglePledgeBillTest.js            # 切結明細 — 測試環境（含分散式鎖 J1）
+├── GoogleOffsetListFreeDate.js       # 切結轉神寶 — 正式環境，手動日期（含分散式鎖 L1）
 ├── GoogleOffsetListTest.js           # 切結轉神寶 — 測試環境（含分散式鎖 L1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）

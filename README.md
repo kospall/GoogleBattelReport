@@ -44,7 +44,9 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDate.js     # 業績明細 — 手動日期（接受 CLI 參數）
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
+├── GooglePledgeBillFreeDate.js        # 切結明細 — 正式環境，手動日期（含分散式鎖 J1）
 ├── GooglePledgeBillTest.js            # 切結明細 — 測試環境（含分散式鎖 J1）
+├── GoogleOffsetListFreeDate.js       # 切結轉神寶 — 正式環境，手動日期（含分散式鎖 L1）
 ├── GoogleOffsetListTest.js           # 切結轉神寶 — 測試環境（含分散式鎖 L1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
@@ -392,18 +394,20 @@ while ((today - startdate) > TWO_YEARS_MS) {
 
 ---
 
-### JS 腳本
+### JS 腳本（切結明細）
 
+- `GooglePledgeBillFreeDate.js`（正式環境 `topprd`）
 - `GooglePledgeBillTest.js`（測試環境 `toptst`）
-- 用法：`node GooglePledgeBillTest.js 2024-01-01 2026-12-31`
+- 用法：`node GooglePledgeBillFreeDate.js 2024-01-01 2026-12-31`
 - 寫入目標：`切結明細` 工作表 A2 起
 - 鎖定格：`資料寫入紀錄與判定!J1`
 - 執行紀錄：`切結明細上傳紀錄.log`
 
 ### JS 腳本（切結轉神寶）
 
+- `GoogleOffsetListFreeDate.js`（正式環境 `topprd`）
 - `GoogleOffsetListTest.js`（測試環境 `toptst`）
-- 用法：`node GoogleOffsetListTest.js 2024-01-01 2026-12-31`
+- 用法：`node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31`
 - 寫入目標：`切結轉神寶` 工作表 A2 起
 - 鎖定格：`資料寫入紀錄與判定!L1`
 - 執行紀錄：`切結轉神寶上傳紀錄.log`
@@ -612,6 +616,8 @@ node registerWindowsTask.js 06:30 TaskName    # 指定任務名稱
 # 個別執行
 node GoogleBattelReportAutoDate.js   # 業績明細（正式）
 node GoogleCustomerDe.js             # 客戶明細（正式）
+node GooglePledgeBillFreeDate.js 2024-01-01 2026-12-31   # 切結明細（正式）
+node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31   # 切結轉神寶（正式）
 node setReportSwitchON.js            # 寄信開關設為 ON
 
 # 依序執行（推薦）
