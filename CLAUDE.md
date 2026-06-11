@@ -12,10 +12,15 @@ GoogleBattleReport/
 │   ├── GoogleBattelReportAutoDate.js
 │   ├── GoogleBattelReportFreeDate.js
 │   ├── GoogleCustomerDe.js
+│   ├── GooglePledgeBillAutoDate.js
+│   ├── GooglePledgeBillFreeDate.js
+│   ├── GoogleOffsetListAutoDate.js
+│   ├── GoogleOffsetListFreeDate.js
 │   ├── setReportSwitchON.js
 │   ├── runBattleReportSequence.js
 │   ├── runFreeDateInput.js
 │   ├── runFreeDateReport.bat
+│   ├── runPledgeOffsetAutoDate.bat
 │   ├── registerWindowsTask.js
 │   ├── sent06BattleReport.gs
 │   ├── sent68SummerReport.gs
@@ -35,6 +40,7 @@ GoogleBattleReport/
 ├── GoogleOffsetListTest.js           # 切結轉神寶 — 測試環境（含分散式鎖 L1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
 ├── runBattleReportSequence.js        # 依序執行器（業績明細→客戶明細→寫入ON）
+├── runPledgeOffsetAutoDate.bat       # 切結沖銷排程啟動捷徑（雙擊執行，含 log）
 ├── runFreeDateInput.js               # 手動上傳互動介面（輸入日期並呼叫 FreeDate）
 ├── runFreeDateReport.bat             # 手動上傳啟動捷徑（雙擊執行）
 ├── setReportSwitchON.js              # 將 L1 寄信開關設為 ON
