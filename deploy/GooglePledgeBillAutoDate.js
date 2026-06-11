@@ -41,12 +41,12 @@ const today = new Date();
 const month = today.getMonth() + 1;
 
 let startdate, enddate;
-if (month >= 1 && month <= 9) {
-    startdate = new Date(today.getFullYear() - 1, 9, 1);
-    enddate   = new Date(today.getFullYear(), 8, 30);
+if (month >= 1 && month <= 10) {
+    startdate = new Date(today.getFullYear() - 1, 10, 1);
+    enddate   = new Date(today.getFullYear(), 9, 31);
 } else {
-    startdate = new Date(today.getFullYear(), 9, 1);
-    enddate   = new Date(today.getFullYear() + 1, 8, 30);
+    startdate = new Date(today.getFullYear(), 10, 1);
+    enddate   = new Date(today.getFullYear() + 1, 9, 31);
 }
 
 const START_DATE = toLocalDateStr(startdate);
