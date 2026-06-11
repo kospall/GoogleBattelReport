@@ -89,7 +89,7 @@ node runBattleReportSequence.js
 runPledgeOffsetAutoDate.bat
 ```
 
-確認兩個步驟（切結明細 → 切結轉神寶）依序完成，並檢查 `切結沖銷排程執行紀錄.log`。
+確認兩個步驟（切結明細 → 切結轉神寶）依序完成，並檢查 `PledgeOffsetAutoDate.log`。
 
 ### 6. 登錄每日排程
 
@@ -147,7 +147,7 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 | 1～10 月 | 去年 11/1 | 今年 10/31 |
 | 11～12 月 | 今年 11/1 | 明年 10/31 |
 
-執行紀錄寫入 `切結沖銷排程執行紀錄.log`，任一步驟失敗則中止後續。
+執行紀錄寫入 `PledgeOffsetAutoDate.log`，任一步驟失敗則中止後續。
 
 手動指定日期時可直接用 CLI：
 
@@ -171,4 +171,4 @@ node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31
 
 - `t100erpinport-a72dfbb03006.json` 為機密金鑰，**勿分享或提交至版本控制**
 - 排程登錄後會在工作目錄產生 `runBattleReport.bat`，為自動產生的中介檔，可忽略
-- 執行紀錄寫入 `排程執行紀錄.log`（業績/客戶）與 `切結沖銷排程執行紀錄.log`（切結/沖銷），若有異常請優先查閱
+- 執行紀錄寫入 `排程執行紀錄.log`（業績/客戶）與 `PledgeOffsetAutoDate.log`（切結/沖銷），若有異常請優先查閱
