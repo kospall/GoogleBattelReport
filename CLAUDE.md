@@ -78,7 +78,9 @@ GoogleBattleReport/
 
 **分散式鎖**：多台主機競爭時以 Sheets 儲存格做互斥鎖，寫入前讀鎖、等 1.5 秒再確認、完成後釋放。詳見 [README.md#分散式鎖定機制](README.md#分散式鎖定機制)。
 
-**日期計算**：AutoDate 版本以「3 年前的 10/1」為起點，向前調整直到區間 ≤ 2 年。必須用 `toLocalDateStr()` 而非 `toISOString()`（UTC 偏移會把 10/1 變 9/30）。詳見 [README.md#日期計算autodate-版本](README.md#日期計算autodate-版本)。
+**日期計算（業績明細）**：AutoDate 版本以「3 年前的 10/1」為起點，向前調整直到區間 ≤ 2 年。必須用 `toLocalDateStr()` 而非 `toISOString()`（UTC 偏移會把 10/1 變 9/30）。詳見 [README.md#日期計算autodate-版本](README.md#日期計算autodate-版本)。
+
+**日期計算（切結/沖銷）**：AutoDate 版本以今天月份判斷——1～10 月取去年 11/1～今年 10/31，11～12 月取今年 11/1～明年 10/31。同樣使用 `toLocalDateStr()` 避免 UTC 偏移。
 
 **月初卡控**：每月 1 日 07:00 自動將 L3 設為 `月初確認`，阻擋寄信直到人工確認 C2 日期並從選單解除。詳見 [README.md#setmonthendholdgs](README.md#setmonthendholdgs)。
 
