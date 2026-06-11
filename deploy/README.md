@@ -9,8 +9,13 @@
 | `GoogleBattelReportAutoDate.js` | Node.js | 業績明細同步（正式，日期自動計算）|
 | `GoogleBattelReportFreeDate.js` | Node.js | 業績明細同步（手動指定日期，接受 CLI 參數）|
 | `GoogleCustomerDe.js` | Node.js | 客戶明細同步（正式）|
+| `GooglePledgeBillAutoDate.js` | Node.js | 切結明細同步（正式，日期自動計算）|
+| `GooglePledgeBillFreeDate.js` | Node.js | 切結明細同步（手動指定日期，接受 CLI 參數）|
+| `GoogleOffsetListAutoDate.js` | Node.js | 切結轉神寶同步（正式，日期自動計算）|
+| `GoogleOffsetListFreeDate.js` | Node.js | 切結轉神寶同步（手動指定日期，接受 CLI 參數）|
 | `setReportSwitchON.js` | Node.js | 將戰報寄信開關設為 ON |
-| `runBattleReportSequence.js` | Node.js | 依序執行上述三支腳本的排程入口 |
+| `runBattleReportSequence.js` | Node.js | 依序執行業績明細→客戶明細→寫入ON的排程入口 |
+| `runPledgeOffsetAutoDate.bat` | BAT | 切結沖銷排程啟動捷徑（依序執行切結明細→切結轉神寶，含 log）|
 | `runFreeDateInput.js` | Node.js | 手動上傳互動介面（輸入日期並呼叫 FreeDate）|
 | `runFreeDateReport.bat` | BAT | 手動上傳啟動捷徑（雙擊執行）|
 | `registerWindowsTask.js` | Node.js | 向 Windows 工作排程器登錄每日排程 |
@@ -100,6 +105,26 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 - `解除月初卡控 — 06戰報`：自動推算 B3~B6、F3~F6 並解除 06 的 L3
 - `解除月初卡控 — 04戰報`：自動推算 B3~B6、F3~F6 並解除 04 的 L3
 
+## 切結沖銷排程
+
+雙擊 `runPledgeOffsetAutoDate.bat` 即可依序執行切結明細與切結轉神寶的自動日期上傳。
+
+日期自動計算邏輯：
+
+| 月份 | startdate | enddate |
+|---|---|---|
+| 1～9 月 | 去年 10/1 | 今年 9/30 |
+| 10～12 月 | 今年 10/1 | 明年 9/30 |
+
+執行紀錄寫入 `切結沖銷排程執行紀錄.log`，任一步驟失敗則中止後續。
+
+手動指定日期時可直接用 CLI：
+
+```cmd
+node GooglePledgeBillFreeDate.js 2024-01-01 2026-12-31
+node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31
+```
+
 ## 手動指定日期上傳
 
 需要補傳特定日期區間的業績明細時，雙擊 `runFreeDateReport.bat`：
@@ -115,4 +140,4 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 
 - `t100erpinport-a72dfbb03006.json` 為機密金鑰，**勿分享或提交至版本控制**
 - 排程登錄後會在工作目錄產生 `runBattleReport.bat`，為自動產生的中介檔，可忽略
-- 執行紀錄寫入 `排程執行紀錄.log`，若有異常請優先查閱此檔案
+- 執行紀錄寫入 `排程執行紀錄.log`（業績/客戶）與 `切結沖銷排程執行紀錄.log`（切結/沖銷），若有異常請優先查閱
