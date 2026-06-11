@@ -34,7 +34,28 @@
 
 ### 2. 放置檔案
 
-將此資料夾內所有 `.js` 檔複製至目標主機的工作目錄（例如 `C:\BattleReport\`）。
+將此資料夾內所有 `.js` 與 `.bat` 檔複製至目標主機的工作目錄（例如 `C:\BattleReport\`）：
+
+```cmd
+:: 業績/客戶相關
+GoogleBattelReportAutoDate.js
+GoogleBattelReportFreeDate.js
+GoogleCustomerDe.js
+setReportSwitchON.js
+runBattleReportSequence.js
+runFreeDateInput.js
+runFreeDateReport.bat
+
+:: 切結/沖銷相關
+GooglePledgeBillAutoDate.js
+GooglePledgeBillFreeDate.js
+GoogleOffsetListAutoDate.js
+GoogleOffsetListFreeDate.js
+runPledgeOffsetAutoDate.bat
+
+:: 工具
+registerWindowsTask.js
+```
 
 ### 3. 放置金鑰
 
@@ -54,11 +75,21 @@ npm install axios googleapis
 
 ### 5. 測試執行
 
+業績/客戶排程：
+
 ```cmd
 node runBattleReportSequence.js
 ```
 
 確認三個步驟（業績明細 → 客戶明細 → 寫入ON）依序完成。
+
+切結/沖銷排程：
+
+```cmd
+runPledgeOffsetAutoDate.bat
+```
+
+確認兩個步驟（切結明細 → 切結轉神寶）依序完成，並檢查 `切結沖銷排程執行紀錄.log`。
 
 ### 6. 登錄每日排程
 
