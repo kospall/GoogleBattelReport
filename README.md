@@ -44,8 +44,10 @@ GoogleBattleReport/
 ├── GoogleBattelReportFreeDate.js     # 業績明細 — 手動日期（接受 CLI 參數）
 ├── GoogleBattelReportFreeDateTest.js # 業績明細 — 測試環境，日期手動設定
 ├── GoogleCustomerDe.js               # 客戶明細 — 正式環境
+├── GooglePledgeBillAutoDate.js        # 切結明細 — 正式環境，日期自動計算（含分散式鎖 J1）
 ├── GooglePledgeBillFreeDate.js        # 切結明細 — 正式環境，手動日期（含分散式鎖 J1）
 ├── GooglePledgeBillTest.js            # 切結明細 — 測試環境（含分散式鎖 J1）
+├── GoogleOffsetListAutoDate.js       # 切結轉神寶 — 正式環境，日期自動計算（含分散式鎖 L1）
 ├── GoogleOffsetListFreeDate.js       # 切結轉神寶 — 正式環境，手動日期（含分散式鎖 L1）
 ├── GoogleOffsetListTest.js           # 切結轉神寶 — 測試環境（含分散式鎖 L1）
 ├── customerListTest.js               # 客戶明細 — 測試環境
@@ -396,21 +398,34 @@ while ((today - startdate) > TWO_YEARS_MS) {
 
 ### JS 腳本（切結明細）
 
-- `GooglePledgeBillFreeDate.js`（正式環境 `topprd`）
+- `GooglePledgeBillAutoDate.js`（正式環境 `topprd`，日期自動計算）
+- `GooglePledgeBillFreeDate.js`（正式環境 `topprd`，手動日期）
 - `GooglePledgeBillTest.js`（測試環境 `toptst`）
-- 用法：`node GooglePledgeBillFreeDate.js 2024-01-01 2026-12-31`
+- 用法：`node GooglePledgeBillAutoDate.js`（自動計算）或 `node GooglePledgeBillFreeDate.js 2024-01-01 2026-12-31`（手動）
 - 寫入目標：`切結明細` 工作表 A2 起
 - 鎖定格：`資料寫入紀錄與判定!J1`
 - 執行紀錄：`切結明細上傳紀錄.log`
 
 ### JS 腳本（切結轉神寶）
 
-- `GoogleOffsetListFreeDate.js`（正式環境 `topprd`）
+- `GoogleOffsetListAutoDate.js`（正式環境 `topprd`，日期自動計算）
+- `GoogleOffsetListFreeDate.js`（正式環境 `topprd`，手動日期）
 - `GoogleOffsetListTest.js`（測試環境 `toptst`）
-- 用法：`node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31`
+- 用法：`node GoogleOffsetListAutoDate.js`（自動計算）或 `node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31`（手動）
 - 寫入目標：`切結轉神寶` 工作表 A2 起
 - 鎖定格：`資料寫入紀錄與判定!L1`
 - 執行紀錄：`切結轉神寶上傳紀錄.log`
+
+### 日期自動計算邏輯（AutoDate 版本）
+
+以今天的月份判斷：
+
+| 月份 | startdate | enddate |
+|---|---|---|
+| 1～9 月 | 去年 10/1 | 今年 9/30 |
+| 10～12 月 | 今年 10/1 | 明年 9/30 |
+
+日期格式化使用 `toLocalDateStr()`，避免 UTC 偏移問題。
 
 ---
 
@@ -616,8 +631,10 @@ node registerWindowsTask.js 06:30 TaskName    # 指定任務名稱
 # 個別執行
 node GoogleBattelReportAutoDate.js   # 業績明細（正式）
 node GoogleCustomerDe.js             # 客戶明細（正式）
-node GooglePledgeBillFreeDate.js 2024-01-01 2026-12-31   # 切結明細（正式）
-node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31   # 切結轉神寶（正式）
+node GooglePledgeBillAutoDate.js                         # 切結明細（正式，自動日期）
+node GoogleOffsetListAutoDate.js                         # 切結轉神寶（正式，自動日期）
+node GooglePledgeBillFreeDate.js 2024-01-01 2026-12-31   # 切結明細（正式，手動日期）
+node GoogleOffsetListFreeDate.js 2024-01-01 2026-12-31   # 切結轉神寶（正式，手動日期）
 node setReportSwitchON.js            # 寄信開關設為 ON
 
 # 依序執行（推薦）
