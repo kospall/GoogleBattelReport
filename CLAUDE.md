@@ -48,6 +48,7 @@ GoogleBattleReport/
 ├── sent04BattleReport.gs             # Google Apps Script — 04戰報寄送（全國）
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
 ├── sent68SummerReport.gs             # Google Apps Script — 68夏季活動寄送（含 E 欄篩選）
+├── sent99AnnualBonus.gs              # Google Apps Script — 99年度獎金寄送（含 D 欄篩選）
 ├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
 ├── exportSheetData.gs                # Google Apps Script — 匯出業績/客戶明細為無公式 xlsx
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
@@ -87,3 +88,5 @@ GoogleBattleReport/
 **dateSwitch**：業績明細 API 有 5 個 SQL 切換（1=出庫、2=有來源退庫、3=無來源退庫、4=訂單非S05、5=訂單S05），JS 腳本呼叫 1~5，後端另有 6 未使用。詳見 [README.md#dateswitch-說明](README.md#dateswitch-說明)。
 
 **68夏季活動篩選**：`sent68SummerReport.gs` 寄出前篩選 `68夏季活動` 工作表，第 1~3 行無條件輸出，第 4 行起僅保留 E 欄不為空的列；PDF 與 Excel 均從篩選後的 tempSS 匯出。控制頁為 `夏日活動計算`，儲存格配置同 `06戰報日期區間`。詳見 [README.md#sent68summerreportgs](README.md#sent68summerreportgs)。
+
+**99年度獎金篩選**：`sent99AnnualBonus.gs` 寄出前篩選 `99年度獎金` 工作表，第 1~3 行無條件輸出，第 4 行起僅保留 D 欄不為空的列；PDF 與 Excel 均從篩選後的 tempSS 匯出。控制頁為 `99年度獎金計算`，儲存格配置同 `夏日活動計算`。詳見 [README.md#sent99annualbonusgs](README.md#sent99annualbonusgs)。

@@ -64,7 +64,8 @@ GoogleBattleReport/
 ├── registerWindowsTask.js            # Windows 工作排程器登錄工具
 ├── sent04BattleReport.gs             # Google Apps Script — 04戰報寄送（全國）
 ├── sent06BattleReport.gs             # Google Apps Script — 06戰報寄送
-├── sent68SummerReport.gs             # Google Apps Script — 68夏季活動寄送
+├── sent68SummerReport.gs             # Google Apps Script — 68夏季活動寄送（含 E 欄篩選）
+├── sent99AnnualBonus.gs              # Google Apps Script — 99年度獎金寄送（含 D 欄篩選）
 ├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
 ├── exportSheetData.gs                # Google Apps Script — 匯出業績/客戶明細為無公式 xlsx
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
@@ -446,6 +447,7 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | 立即寄送戰報06 | `sent06BattleReport` |
 | 立即寄送戰報04 | `sent04BattleReport` |
 | 立即寄送68夏季活動 | `sent68SummerReport` |
+| 立即寄送99年度獎金 | `sent99AnnualBonus` |
 | 解除月初卡控 — 06戰報 | `release06MonthEndHold` |
 | 解除月初卡控 — 04戰報 | `release04MonthEndHold` |
 | 匯出業績明細（無公式 Excel）| `exportSalesData` |
@@ -556,6 +558,43 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | `formatDateTime_68_(date)` | Date → `YYYY/MM/DD HH:MM:SS` |
 | `formatDateCompact_68_(date)` | Date → `YYYYMMDD`（Excel 分頁名）|
 | `getTimestamp_68_()` | 現在時間 → `MMDDHHmmss`（狀態戳記）|
+
+### sent99AnnualBonus.gs
+
+從 Google Sheets 的 `99年度獎金` 工作表匯出 PDF 與 Excel，透過 Gmail 寄出。  
+邏輯結構與 `sent68SummerReport.gs` 相同，控制工作表改為 `99年度獎金計算`。  
+**差異**：篩選條件改為 D 欄——第 1~3 行無條件納入，第 4 行起僅保留 D 欄不為空的列。
+
+#### 控制工作表：`99年度獎金計算`
+
+| 儲存格 | 用途 |
+|---|---|
+| `C2` | 日期（Date 型別，用於檔名與信件標題；空白時 Excel 分頁名改用工作表名）|
+| `L1` | 寄信開關（`ON` = 允許，寄送後自動改為 `OFF`）|
+| `L2` | 資料時間（DateTime 型別，顯示於信件內容）|
+| `L3` | 強制停止（`OFF` = 正常，其他值則中止）|
+| `L4` | 執行狀態（`寄送處理中` / `寄送成功MMDDHHMMSS` / `寄送失敗MMDDHHMMSS`）|
+| `N1` | 額外收件人 Email（空白則只寄固定收件人）|
+| `N2` | 信件標題附加說明 |
+| `N3` | 信件內容附加說明 |
+
+固定收件人：`shaojyun.hong@bingdian.com.tw`
+
+#### 資料篩選規則
+
+| 列範圍 | 條件 | 說明 |
+|---|---|---|
+| 第 1~3 行 | 無條件納入 | 標題列 / 表頭區 |
+| 第 4 行起 | D 欄不為空才納入 | D 欄空白表示該項目無資料，不寄出 |
+
+#### 工具函式
+
+| 函式 | 說明 |
+|---|---|
+| `formatDate_99_(date)` | Date → `YYYY/MM/DD` |
+| `formatDateTime_99_(date)` | Date → `YYYY/MM/DD HH:MM:SS` |
+| `formatDateCompact_99_(date)` | Date → `YYYYMMDD`（Excel 分頁名）|
+| `getTimestamp_99_()` | 現在時間 → `MMDDHHmmss`（狀態戳記）|
 
 ---
 
@@ -725,6 +764,7 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 | `sent04BattleReport.gs` | 全國業績戰報（04）寄送邏輯 |
 | `sent06BattleReport.gs` | 業績戰報（06）寄送邏輯 |
 | `sent68SummerReport.gs` | 68夏季活動寄送邏輯（含 E 欄篩選）|
+| `sent99AnnualBonus.gs` | 99年度獎金寄送邏輯（含 D 欄篩選）|
 | `setMonthEndHold.gs` | 月初自動卡控與解除卡控邏輯 |
 | `exportSheetData.gs` | 業績明細 / 客戶明細匯出為無公式 xlsx |
 
