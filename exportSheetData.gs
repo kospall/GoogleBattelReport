@@ -3,13 +3,47 @@
 // - 從 Sheets 選單執行：彈出對話框直接觸發瀏覽器下載
 // - 從 Apps Script 編輯器執行：儲存至指定 Drive 資料夾並記錄 URL
 //
-// exportSalesData    → 業績明細
+// exportSalesData    → 業績明細（可選：指定日期區間，依『單據日期』K欄篩選）
 // exportCustomerData → 客戶明細
 
 var EXPORT_FOLDER_ID = '1dWfBpk7sdH5Qag1MI8MUXXhgBPBUAO93';
 
+// 業績明細『單據日期』欄索引（0-based，K欄）
+var SALES_DATE_COL_INDEX_ = 10;
+
 function exportSalesData() {
-  exportSheetToExcel_('業績明細', '業績明細');
+  var ui = SpreadsheetApp.getUi();
+
+  var startResp = ui.prompt('匯出業績明細', '請輸入開始日期（格式 YYYY-MM-DD 或 YYYY/MM/DD，留空則匯出全部）：', ui.ButtonSet.OK_CANCEL);
+  if (startResp.getSelectedButton() !== ui.Button.OK) return;
+  var startText = startResp.getResponseText().trim();
+
+  var dateFilter = null;
+
+  if (startText) {
+    var startDate = parseDateInput_(startText);
+    if (!startDate) {
+      ui.alert('開始日期格式錯誤，請重新執行。');
+      return;
+    }
+
+    var endResp = ui.prompt('匯出業績明細', '請輸入結束日期（格式 YYYY-MM-DD 或 YYYY/MM/DD）：', ui.ButtonSet.OK_CANCEL);
+    if (endResp.getSelectedButton() !== ui.Button.OK) return;
+    var endDate = parseDateInput_(endResp.getResponseText().trim());
+    if (!endDate) {
+      ui.alert('結束日期格式錯誤，請重新執行。');
+      return;
+    }
+
+    if (startDate > endDate) {
+      ui.alert('開始日期不能晚於結束日期。');
+      return;
+    }
+
+    dateFilter = { dateColIndex: SALES_DATE_COL_INDEX_, startDate: startDate, endDate: endDate };
+  }
+
+  exportSheetToExcel_('業績明細', '業績明細', dateFilter);
 }
 
 function exportCustomerData() {
@@ -18,7 +52,7 @@ function exportCustomerData() {
 
 // ===== 共用匯出邏輯 =====
 
-function exportSheetToExcel_(sheetName, filePrefix) {
+function exportSheetToExcel_(sheetName, filePrefix, dateFilter) {
   var startTime = new Date();
   Logger.log('[開始] 匯出 ' + sheetName + ' — ' + startTime.toLocaleTimeString());
 
@@ -47,6 +81,24 @@ function exportSheetToExcel_(sheetName, filePrefix) {
   var t1 = new Date();
   var values = dataRange.getDisplayValues();
   Logger.log('[步驟1] getDisplayValues 完成 — ' + elapsed_(t1) + '秒');
+
+  // ---- 步驟 1b：依指定日期區間篩選（若有）----
+  if (dateFilter) {
+    var header = values[0];
+    var filteredRows = values.slice(1).filter(function (row) {
+      var d = parseDateInput_(row[dateFilter.dateColIndex]);
+      return d && d >= dateFilter.startDate && d <= dateFilter.endDate;
+    });
+    Logger.log('[步驟1b] 日期區間篩選完成，符合筆數：' + filteredRows.length);
+
+    if (filteredRows.length === 0) {
+      SpreadsheetApp.getUi().alert('指定日期區間內無符合資料。');
+      return;
+    }
+
+    values = [header].concat(filteredRows);
+    fileName += '_' + formatDateCompact2_(dateFilter.startDate) + '-' + formatDateCompact2_(dateFilter.endDate);
+  }
 
   // ---- 步驟 2：建立暫存試算表 ----
   var t2 = new Date();

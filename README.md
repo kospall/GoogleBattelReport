@@ -463,17 +463,19 @@ while ((today - startdate) > TWO_YEARS_MS) {
 
 | 函式 | 說明 |
 |---|---|
-| `exportSalesData()` | 匯出業績明細 |
+| `exportSalesData()` | 匯出業績明細；跳出提示框可選填開始/結束日期，依『單據日期』（K欄）篩選，留空則匯出全部 |
 | `exportCustomerData()` | 匯出客戶明細 |
-| `exportSheetToExcel_(sheetName, filePrefix)` | 共用匯出邏輯 |
+| `exportSheetToExcel_(sheetName, filePrefix, dateFilter)` | 共用匯出邏輯；`dateFilter` 為選填的 `{dateColIndex, startDate, endDate}`，用於依日期區間篩選列 |
 
 **匯出方式**：
 - **從 Sheets 選單執行**：透過 base64 data URL 直接觸發瀏覽器下載，不佔 Drive 空間
 - **從 Apps Script 編輯器執行**：儲存至指定 Drive 資料夾（`EXPORT_FOLDER_ID`），URL 記錄於 Logger
 
-**檔名格式**：`YYYYMMDD 業績明細.xlsx` / `YYYYMMDD 客戶明細.xlsx`
+**檔名格式**：`YYYYMMDD 業績明細.xlsx`（全部）/ `YYYYMMDD 業績明細_開始日期-結束日期.xlsx`（指定日期區間）/ `YYYYMMDD 客戶明細.xlsx`
 
-**處理流程**：讀取 `getDisplayValues()`（去公式）→ 建立暫存試算表寫入值 → 匯出 xlsx → 刪除暫存。10 萬列約 2 分鐘，在 GAS 6 分鐘上限內。
+**處理流程**：跳出提示框輸入日期（僅業績明細，可留空）→ 讀取 `getDisplayValues()`（去公式）→ 若有指定日期區間則依『單據日期』篩選 → 建立暫存試算表寫入值 → 匯出 xlsx → 刪除暫存。10 萬列約 2 分鐘，在 GAS 6 分鐘上限內。
+
+`exportSalesData()` 的日期解析（`parseDateInput_`）與檔名日期格式化（`formatDateCompact2_`）沿用 [exportSalesDataForFinance.gs](#exportsalesdataforfinancegs) 定義的工具函式（同一 Apps Script 專案內共用），兩個檔案須一併貼入才能運作。
 
 ### exportSalesDataForFinance.gs
 

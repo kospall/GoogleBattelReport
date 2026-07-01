@@ -93,3 +93,5 @@ GoogleBattleReport/
 **99年度獎金篩選**：`sent99AnnualBonus.gs` 寄出前篩選 `99年度獎金` 工作表，第 1~3 行無條件輸出，第 4 行起僅保留 D 欄不為空的列；PDF 與 Excel 均從篩選後的 tempSS 匯出。控制頁為 `99年度獎金計算`，儲存格配置同 `夏日活動計算`。詳見 [README.md#sent99annualbonusgs](README.md#sent99annualbonusgs)。
 
 **業績明細匯出給財務**：`exportSalesDataForFinance.gs` 從選單跳出提示框輸入起訖日期，篩選 `業績明細` 中『單據日期』落在區間內的資料，並排除『銷售通路』或『分公司代號（取自 P 欄「戰報分區」）』為空白的列。左側加入 單別（依單據單號前 6 碼判定）／分公司代號（P 欄原值）／中文（對照 `SALES_AREA_MAP_`）三欄後匯出無公式 xlsx。詳見 [README.md#exportsalesdataforfinancegs](README.md#exportsalesdataforfinancegs)。
+
+**業績明細匯出（原版）日期區間篩選**：`exportSheetData.gs` 的 `exportSalesData()` 也可跳出提示框選填起訖日期，依『單據日期』（K欄）篩選後再匯出無公式 xlsx；日期留空則維持匯出全部資料。日期解析與檔名格式化共用 `exportSalesDataForFinance.gs` 內的 `parseDateInput_()` / `formatDateCompact2_()`，兩檔須一併貼入同一 Apps Script 專案。詳見 [README.md#exportsheetdatags](README.md#exportsheetdatags)。
