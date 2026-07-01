@@ -68,6 +68,7 @@ GoogleBattleReport/
 ├── sent99AnnualBonus.gs              # Google Apps Script — 99年度獎金寄送（含 D 欄篩選）
 ├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
 ├── exportSheetData.gs                # Google Apps Script — 匯出業績/客戶明細為無公式 xlsx
+├── exportSalesDataForFinance.gs      # Google Apps Script — 匯出業績明細給財務（指定日期區間，含分公司代號/中文）
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
@@ -452,6 +453,7 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | 解除月初卡控 — 04戰報 | `release04MonthEndHold` |
 | 匯出業績明細（無公式 Excel）| `exportSalesData` |
 | 匯出客戶明細（無公式 Excel）| `exportCustomerData` |
+| 匯出業績明細給財務（指定日期）| `exportSalesDataForFinance` |
 
 `onOpen()` 在每次開啟試算表時自動執行，無需手動觸發。
 
@@ -472,6 +474,32 @@ while ((today - startdate) > TWO_YEARS_MS) {
 **檔名格式**：`YYYYMMDD 業績明細.xlsx` / `YYYYMMDD 客戶明細.xlsx`
 
 **處理流程**：讀取 `getDisplayValues()`（去公式）→ 建立暫存試算表寫入值 → 匯出 xlsx → 刪除暫存。10 萬列約 2 分鐘，在 GAS 6 分鐘上限內。
+
+### exportSalesDataForFinance.gs
+
+從 Sheets 選單匯出「業績明細」工作表中**指定日期區間**的資料給財務，左側加入 單別／分公司代號／中文 三欄，無公式。
+
+| 函式 | 說明 |
+|---|---|
+| `exportSalesDataForFinance()` | 跳出提示框輸入開始/結束日期（`YYYY-MM-DD` 或 `YYYY/MM/DD`），驗證後呼叫匯出邏輯 |
+| `exportSalesDataForFinance_(startDate, endDate)` | 依日期區間篩選、組欄、建立暫存試算表並匯出 xlsx |
+| `resolveDocType_(docNo)` | 依單據單號前 6 碼判定單別 |
+| `parseDateInput_(str)` | 解析 `YYYY-MM-DD` / `YYYY/MM/DD` 字串為 Date |
+
+**新增欄位邏輯**：
+- **單別**：`LEFT(單據單號, 6)`，`01-E01`→寄庫訂單、`01-E02`→出貨單、其他→銷退單
+- **分公司代號**：取自『業績明細』P 欄「戰報分區」原值
+- **中文**：依分公司代號對照 `SALES_AREA_MAP_`（10/10A~10G/19→台北、20系列→桃園、30系列→竹苗、40系列→台中、50系列→彰投（50E→花蓮）、60系列→雲嘉、70系列→台南（70D→澎湖）、80系列→高雄（80E→台東）等）轉換為中文分區名稱
+
+**篩選規則**：
+- 僅保留『單據日期』（K欄）落在使用者輸入起訖日期區間內的資料
+- 排除『銷售通路』（C欄）或『分公司代號／戰報分區』（P欄）為空白的資料列
+
+**輸出欄位順序（16 欄）**：單別、分公司代號、中文、單據單號、訂單客戶、銷售通路、項次、料件編號、計價數量、未稅金額、含稅金額、稅額、訂單單號、單據日期、銷售分群、補空格（不含業績明細 M 欄「計級計獎」）
+
+**檔名格式**：`YYYYMMDD 業績明細_財務用_開始日期-結束日期.xlsx`
+
+**處理流程**：跳出提示框輸入日期 → 讀取 `getDisplayValues()`（去公式）→ 依日期區間與空白條件篩選 → 組出加欄後的列 → 建立暫存試算表寫入值 → 匯出 xlsx → 刪除暫存 → 觸發瀏覽器下載（無 UI 上下文時改存至 `EXPORT_FOLDER_ID`）。
 
 ### setMonthEndHold.gs
 
@@ -767,6 +795,7 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 | `sent99AnnualBonus.gs` | 99年度獎金寄送邏輯（含 D 欄篩選）|
 | `setMonthEndHold.gs` | 月初自動卡控與解除卡控邏輯 |
 | `exportSheetData.gs` | 業績明細 / 客戶明細匯出為無公式 xlsx |
+| `exportSalesDataForFinance.gs` | 業績明細匯出給財務（指定日期區間，含分公司代號/中文）|
 
 工具函式（`formatDate_` 等）定義於各自的 `.gs` 檔案，函式名稱以後綴區分（`_`、`_68_`），**不可跨檔案重複貼入**。
 

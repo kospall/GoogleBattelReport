@@ -11,5 +11,6 @@ function onOpen() {
     .addSeparator()
     .addItem('匯出業績明細（無公式 Excel）', 'exportSalesData')
     .addItem('匯出客戶明細（無公式 Excel）', 'exportCustomerData')
+    .addItem('匯出業績明細給財務（指定日期）', 'exportSalesDataForFinance')
     .addToUi();
 }

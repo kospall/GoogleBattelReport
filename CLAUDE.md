@@ -51,6 +51,7 @@ GoogleBattleReport/
 ├── sent99AnnualBonus.gs              # Google Apps Script — 99年度獎金寄送（含 D 欄篩選）
 ├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
 ├── exportSheetData.gs                # Google Apps Script — 匯出業績/客戶明細為無公式 xlsx
+├── exportSalesDataForFinance.gs      # Google Apps Script — 匯出業績明細給財務（指定日期區間，含分公司代號/中文）
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
@@ -90,3 +91,5 @@ GoogleBattleReport/
 **68夏季活動篩選**：`sent68SummerReport.gs` 寄出前篩選 `68夏季活動` 工作表，第 1~3 行無條件輸出，第 4 行起僅保留 E 欄不為空的列；PDF 與 Excel 均從篩選後的 tempSS 匯出。控制頁為 `夏日活動計算`，儲存格配置同 `06戰報日期區間`。詳見 [README.md#sent68summerreportgs](README.md#sent68summerreportgs)。
 
 **99年度獎金篩選**：`sent99AnnualBonus.gs` 寄出前篩選 `99年度獎金` 工作表，第 1~3 行無條件輸出，第 4 行起僅保留 D 欄不為空的列；PDF 與 Excel 均從篩選後的 tempSS 匯出。控制頁為 `99年度獎金計算`，儲存格配置同 `夏日活動計算`。詳見 [README.md#sent99annualbonusgs](README.md#sent99annualbonusgs)。
+
+**業績明細匯出給財務**：`exportSalesDataForFinance.gs` 從選單跳出提示框輸入起訖日期，篩選 `業績明細` 中『單據日期』落在區間內的資料，並排除『銷售通路』或『分公司代號（取自 P 欄「戰報分區」）』為空白的列。左側加入 單別（依單據單號前 6 碼判定）／分公司代號（P 欄原值）／中文（對照 `SALES_AREA_MAP_`）三欄後匯出無公式 xlsx。詳見 [README.md#exportsalesdataforfinancegs](README.md#exportsalesdataforfinancegs)。
