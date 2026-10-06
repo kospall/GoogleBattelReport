@@ -69,6 +69,7 @@ GoogleBattleReport/
 ├── setMonthEndHold.gs                # Google Apps Script — 月初自動卡控 L3
 ├── exportSheetData.gs                # Google Apps Script — 匯出業績/客戶明細為無公式 xlsx
 ├── exportSalesDataForFinance.gs      # Google Apps Script — 匯出業績明細給財務（指定日期區間，含分公司代號/中文）
+├── generateTargetLongTable.gs        # Google Apps Script — 目標交叉表轉直列（交叉轉直列專用表 T~X）
 ├── ui.gs                             # Google Apps Script — Sheets 自訂選單（onOpen）
 ├── cwsspa016.4gl                     # 後端 API 原始碼 — 取得戰報明細（Genero BDL）
 ├── cwsspa017.4gl                     # 後端 API 原始碼 — 取得客戶明細（Genero BDL）
@@ -454,6 +455,7 @@ while ((today - startdate) > TWO_YEARS_MS) {
 | 匯出業績明細（無公式 Excel）| `exportSalesData` |
 | 匯出客戶明細（無公式 Excel）| `exportCustomerData` |
 | 匯出業績明細給財務（指定日期）| `exportSalesDataForFinance` |
+| 產生目標直列表 | `generateTargetLongTable` |
 
 `onOpen()` 在每次開啟試算表時自動執行，無需手動觸發。
 
@@ -476,6 +478,22 @@ while ((today - startdate) > TWO_YEARS_MS) {
 **處理流程**：跳出提示框輸入日期（僅業績明細，可留空）→ 讀取 `getDisplayValues()`（去公式）→ 若有指定日期區間則依『單據日期』篩選 → 建立暫存試算表寫入值 → 匯出 xlsx → 刪除暫存。10 萬列約 2 分鐘，在 GAS 6 分鐘上限內。
 
 `exportSalesData()` 的日期解析（`parseDateInput_`）與檔名日期格式化（`formatDateCompact2_`）沿用 [exportSalesDataForFinance.gs](#exportsalesdataforfinancegs) 定義的工具函式（同一 Apps Script 專案內共用），兩個檔案須一併貼入才能運作。
+
+### generateTargetLongTable.gs
+
+從 Sheets 選單將 `交叉轉直列專用表` 的「路線 × 月份」交叉表（A~O）轉成直列格式，寫入同工作表 T~X 欄。
+
+| 輸出欄 | 內容 |
+|---|---|
+| T 路線 | 來源 B 欄，一律轉字串（避免 `33`、`55` 變數字）|
+| U 負責人 | 來源 C 欄，原樣照轉（含「人員待補」等佔位文字）|
+| V 屬性 | 來源 D1:O1 表頭的月份日期（真日期，格式 `yyyy/m/d`）|
+| W 值 | 該路線該月份的目標金額（數字，千分位）|
+| X 日期驗證 | 公式 `=DATEVALUE(TEXT($V列,"yyyy/m/d"))` |
+
+- 月份由 D1 起連續的日期表頭決定，更新表頭後重新執行即可
+- 每次執行先清空 T~X 再整批寫入（含表頭列），不會累加；筆數 = 路線數 × 月份數
+- 路線欄（B）為空的列略過；不輸出部門（A 欄）
 
 ### exportSalesDataForFinance.gs
 
@@ -798,6 +816,7 @@ schtasks /query /tn "GoogleBattleReport" /fo LIST
 | `setMonthEndHold.gs` | 月初自動卡控與解除卡控邏輯 |
 | `exportSheetData.gs` | 業績明細 / 客戶明細匯出為無公式 xlsx |
 | `exportSalesDataForFinance.gs` | 業績明細匯出給財務（指定日期區間，含分公司代號/中文）|
+| `generateTargetLongTable.gs` | 目標交叉表轉直列（交叉轉直列專用表 T~X）|
 
 工具函式（`formatDate_` 等）定義於各自的 `.gs` 檔案，函式名稱以後綴區分（`_`、`_68_`），**不可跨檔案重複貼入**。
 
